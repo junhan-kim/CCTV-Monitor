@@ -4,7 +4,7 @@ import sys
 import ffmpeg
 
 
-server_url = "rtmp://localhost/show"
+server_url = "rtmp://localhost/show/stream"
 
 
 def start_streaming(width, height):

@@ -23,6 +23,7 @@ ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get install -y ffmpeg
 
 # run nginx
+RUN apt-get install -y net-tools
 COPY ./conf/nginx.conf /usr/local/nginx/conf/nginx.conf
 CMD ["/usr/local/nginx/sbin/nginx", "-g", "daemon off;"]
 
