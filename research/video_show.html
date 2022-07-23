@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<link href="video-js.min.css" rel="stylesheet">
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+  }
+  .info {
+    background-color: #eee;
+    border: thin solid #333;
+    border-radius: 3px;
+    padding: 0 5px;
+    margin: 20px 0;
+  }
+  input {
+    margin-top: 15px;
+    min-width: 450px;
+    padding: 5px;
+  }
+</style>
+<head>
+	<title>Streaming Test</title>
+</head>
+<body>
+<video id=example-video width=600 height=300 class="video-js vjs-default-skin" controls>
+  <source
+     src="http://localhost:8080/hls/stream.m3u8"
+     type="application/x-mpegURL">
+</video>
+<script src="video.js"></script>
+<script src="videojs-contrib-hls.min.js"></script>
+<script>
+var player = videojs('example-video');
+player.play();
+</script>
+</body>
+</html>
