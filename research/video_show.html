@@ -1,19 +1,39 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>test</title>
-</head>
-<body>
-
-<video id="player" height="360" width="640" controls preload="none">
-    <source src="http://localhost:8080/hls/streamname.m3u8" type="application/x-mpegURL" />
-</video>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<video id="video"></video>
 <script>
+if(Hls.isSupported()) {
+    var video = document.getElementById('video');
+    var hls = new Hls();
+    hls.loadSource('http://localhost:8080/hls/test/index.m3u8'); // 동영상경로
+    hls.attachMedia(video);
+    hls.on(Hls.Events.MANIFEST_PARSED,function() {
+        video.play();
+    });
+}
+// hls.js is not supported on platforms that do not have Media Source Extensions (MSE) enabled.
+// When the browser has built-in HLS support (check using `canPlayType`), we can provide an HLS manifest (i.e. .m3u8 URL) directly to the video element throught the `src` property.
+// This is using the built-in support of the plain video element, without using hls.js.
+else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+  console.log('a')
+  video.src = 'http://localhost:8080/hls/test/index.m3u8'; // 동영상경로
+  video.addEventListener('canplay',function() {
+      video.play();
+  });
+}
 </script>
-</body>
-</html>
 
+<!-- <script>
+  var supported = document.createElement('video').canPlayType('application/x-mpegURL')
+
+  if (supported) {
+    // There's support
+    console.log('true')
+  } else {
+    // There's no support
+    console.log('false')
+  }
+
+</script> -->
 
 
 <!-- <!DOCTYPE html>
@@ -43,7 +63,7 @@
 <body>
 <video id=example-video width=600 height=300 class="video-js vjs-default-skin" controls>
   <source
-     src="http://localhost:8080/hls/stream.m3u8"
+     src="http://localhost:8080/hls/test/index.m3u8"
      type="application/x-mpegURL">
 </video>
 <script src="video.js"></script>

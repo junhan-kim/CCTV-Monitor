@@ -5,7 +5,8 @@ import sys
 import subprocess
 
 
-server_url = "rtmp://localhost:1935/show/streamname.flv"
+# server_url = "rtmp://localhost/live/streamname.flv"
+server_url = "rtmp://localhost/live/test"
 
 
 # def start_streaming(width, height):
@@ -40,7 +41,8 @@ def start_streaming(width, height):
                '-pix_fmt', 'yuv420p',
                '-preset', 'ultrafast',
                '-f', 'flv',
-               'rtmp://localhost:1935/show']
+               #    'rtmp://localhost:1935/show/streamname.flv']
+               f'{server_url}']
 
     proc = subprocess.Popen(command, stdin=subprocess.PIPE, shell=False)
     return proc
