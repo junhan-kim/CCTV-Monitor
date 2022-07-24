@@ -1,28 +1,49 @@
 import pafy
 import cv2
 import sys
-import ffmpeg
+# import ffmpeg
+import subprocess
 
 
-server_url = "rtmp://localhost/show/stream"
+server_url = "rtmp://localhost:1935/show/streamname.flv"
+
+
+# def start_streaming(width, height):
+#     process = (
+#         ffmpeg
+#         .input('pipe:', format='rawvideo', codec="rawvideo", pix_fmt='bgr24', s='{}x{}'.format(width, height))
+#         .output(
+#             server_url,
+#             # codec = "copy", # use same codecs of the original video
+#             # listen=1,  # enables HTTP server
+
+#             pix_fmt="yuv420p",
+#             preset="ultrafast",
+#             f='flv'
+#         )
+#         .overwrite_output()
+#         .run_async(pipe_stdin=True)
+#     )
+#     return process
 
 
 def start_streaming(width, height):
-    process = (
-        ffmpeg
-        .input('pipe:', format='rawvideo', codec="rawvideo", pix_fmt='bgr24', s='{}x{}'.format(width, height))
-        .output(
-            server_url + '/stream',
-            # codec = "copy", # use same codecs of the original video
-            listen=1,  # enables HTTP server
-            pix_fmt="yuv420p",
-            preset="ultrafast",
-            f='flv'
-        )
-        .overwrite_output()
-        .run_async(pipe_stdin=True)
-    )
-    return process
+    command = ['ffmpeg',
+               '-y',
+               '-f', 'rawvideo',
+               '-vcodec', 'rawvideo',
+               '-pix_fmt', 'bgr24',
+               '-s', f'{width}x{height}',
+               '-re',
+               '-i', '-',
+               '-c:v', 'libx264',
+               '-pix_fmt', 'yuv420p',
+               '-preset', 'ultrafast',
+               '-f', 'flv',
+               'rtmp://localhost:1935/show']
+
+    proc = subprocess.Popen(command, stdin=subprocess.PIPE, shell=False)
+    return proc
 
 
 pafy.set_api_key('AIzaSyC0i7Y_ss-OVPklVi4y7DcQssjDOnkBxHg')

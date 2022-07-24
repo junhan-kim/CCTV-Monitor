@@ -27,4 +27,14 @@ RUN apt-get install -y net-tools
 COPY ./conf/nginx.conf /usr/local/nginx/conf/nginx.conf
 CMD ["/usr/local/nginx/sbin/nginx", "-g", "daemon off;"]
 
-EXPOSE 80
+WORKDIR /
+# RUN useradd -ms /bin/bash admin
+# RUN chown -R admin:admin /mnt
+# USER root
+RUN chmod -R 755 /mnt
+# RUN echo $(ls -l /mnt)
+# USER www-data
+# RUN chown -R :nginx /mnt
+# USER admin
+
+EXPOSE 8080 1935
