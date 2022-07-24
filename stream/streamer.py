@@ -1,6 +1,5 @@
 import pafy
 import cv2
-import sys
 import subprocess
 from configparser import ConfigParser
 from threading import Event
@@ -60,8 +59,9 @@ class Streamer:
             traceback.print_exc()
         finally:
             streaming_process.stdin.close()
-            streaming_process.wait()
+            streaming_process.terminate()
             cap.release()
+            print('terminate')
 
 
 if __name__ == '__main__':
@@ -70,6 +70,7 @@ if __name__ == '__main__':
 
     api_key = parser.get('settings', 'api_key')
     src_url = 'https://www.youtube.com/watch?v=RQA5RcIZlAM'
+    # src_url = "https://www.youtube.com/watch?v=1KWmTK-ERR0"
     dest_url = "rtmp://localhost/live/test"
 
     streamer = Streamer()
