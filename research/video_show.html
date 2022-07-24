@@ -1,4 +1,61 @@
+<!-- <script src="https://player.eyevinn.technology/v0.4.2/build/eyevinn-html-player.js" type="text/javascript"></script>
+<link rel="stylesheet" href="https://player.eyevinn.technology/v0.4.2/build/eyevinn-html-player.css"> -->
+
+<head>
+  <!-- Eyevinn HTML Player CSS -->
+  <link rel="stylesheet" href="https://player.eyevinn.technology/v0.4.2/build/eyevinn-html-player.css"></link>
+</head>
+<body>
+  <!-- The element where the player will be placed -->
+  <div id="player-wrapper"></div>
+
+  <!-- Eyevinn HTML Player Javascript -->
+  <script src="https://player.eyevinn.technology/v0.4.2/build/eyevinn-html-player.js" type="text/javascript"></script>
+
+  <!-- Initiate the player and auto-play with audio muted -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function(event) {
+      setupEyevinnPlayer('player-wrapper', 'http://localhost:8080/hls/test/index.m3u8').then(function(player) {
+        var muteOnStart = true;
+        player.play(muteOnStart);
+      });
+    });
+  </script>
+</body>
+
+
+<!-- <!DOCTYPE html>
+<html>
+<head>
+<meta charset=utf-8 />
+<title>hls.js</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+</head>
+<body>
+<video controls autoplay id="video-player"></video>
+<script>
+	var video = document.getElementById('video-player');
+	var videoSrc = 'http://localhost:8080/hls/test/index.m3u8';
+	//
+	// First check for native browser HLS support
+	//
+	if (video.canPlayType('application/vnd.apple.mpegurl')) {
+		video.src = videoSrc;
+		//
+		// If no native HLS support, check if hls.js is supported
+		//
+	} else if (Hls.isSupported()) {
+		var hls = new Hls();
+		hls.loadSource(videoSrc);
+		hls.attachMedia(video);
+	}
+</script>
+</body>
+</html> -->
+
+
+<!-- <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 <video id="video"></video>
 <script>
 if(Hls.isSupported()) {
@@ -20,7 +77,7 @@ else if (video.canPlayType('application/vnd.apple.mpegurl')) {
       video.play();
   });
 }
-</script>
+</script> -->
 
 <!-- <script>
   var supported = document.createElement('video').canPlayType('application/x-mpegURL')

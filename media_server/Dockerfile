@@ -50,7 +50,7 @@ RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
     ln -sf /dev/stderr /var/log/nginx/error.log
 
 # copy local nginx.conf to docker
-COPY conf/nginx.conf /etc/nginx/nginx.conf
+COPY ./nginx.conf /etc/nginx/nginx.conf
 
 # export 1935 for rtmp, 8080 for hls or dash
 EXPOSE 1935 8080
