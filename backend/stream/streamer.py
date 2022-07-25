@@ -12,11 +12,13 @@ logger = logging.getLogger('main_logger')
 
 
 class Streamer(Thread):
-    def __init__(self, api_key):
+    def __init__(self, api_key, source_url, dest_url):
         Thread.__init__(self)
         self.set_api_key(api_key)
         self.stream_stop_event = Event()
         self.stream_start_event = Event()
+        self.source_url = source_url
+        self.dest_url = dest_url
 
     def set_api_key(self, api_key):
         pafy.set_api_key(api_key)
@@ -78,5 +80,5 @@ class Streamer(Thread):
             cap.release()
             logger.warning('Terminate stream process.')
 
-    def run(self, source_url, dest_url):
-        self.start_video_stream(source_url, dest_url)
+    def run(self):
+        self.start_video_stream(self.source_url, self.dest_url)

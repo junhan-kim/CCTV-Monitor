@@ -34,8 +34,8 @@
 
     function onClickStreamConnect() {
       console.log('Start stream connect.')
-      channel_name = document.getElementById('channel_name').InnerHTML
-      youtube_url = document.getElementById('youtube_url').InnerHTML
+      channel_name = document.getElementById('channel_name').value
+      youtube_url = document.getElementById('youtube_url').value
 
       fetch(`${server_url}/stream/start`, {
           method: "POST",
