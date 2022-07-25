@@ -66,7 +66,7 @@ class Streamer:
 
 if __name__ == '__main__':
     parser = ConfigParser()
-    parser.read('config.ini')
+    parser.read('../config.ini')
 
     api_key = parser.get('settings', 'api_key')
     src_url = 'https://www.youtube.com/watch?v=RQA5RcIZlAM'
