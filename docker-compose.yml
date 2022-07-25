@@ -1,0 +1,25 @@
+version: "3"
+networks:
+  proxynet:
+    driver: bridge
+
+services:
+  backend:
+    container_name: backend
+    build: ./backend
+    restart: always
+    networks:
+      - proxynet
+    ports:
+      - "8989:8989"
+    # command: gunicorn -w 2 -b :5000 wsgi:server
+
+  media_server:
+    container_name: media_server
+    restart: always
+    build: ./media_server
+    ports:
+      - "1935:1935"
+      - "8080:8080"
+    networks:
+      - proxynet
