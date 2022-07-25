@@ -11,8 +11,9 @@ logger = logging.getLogger('main_logger')
 
 
 class Streamer:
-    def __init__(self):
+    def __init__(self, api_key):
         self.stream_stop_event = Event()
+        self.set_api_key(api_key)
 
     def set_api_key(self, api_key):
         pafy.set_api_key(api_key)
@@ -66,17 +67,3 @@ class Streamer:
             streaming_process.terminate()
             cap.release()
             logger.warning('Terminate stream process.')
-
-
-if __name__ == '__main__':
-    parser = ConfigParser()
-    parser.read('../config.ini')
-
-    api_key = parser.get('settings', 'api_key')
-    src_url = 'https://www.youtube.com/watch?v=RQA5RcIZlAM'
-    # src_url = "https://www.youtube.com/watch?v=1KWmTK-ERR0"
-    dest_url = "rtmp://localhost/live/test"
-
-    streamer = Streamer()
-    streamer.set_api_key(api_key)
-    streamer.start_video_stream(src_url, dest_url)

@@ -11,11 +11,16 @@
 
   <!-- Initiate the player and auto-play with audio muted -->
   <script>
-    document.addEventListener('DOMContentLoaded', function(event) {
-      setupEyevinnPlayer('player-wrapper', 'http://localhost:8080/hls/test/index.m3u8').then(function(player) {
+    
+
+    {% comment %} document.addEventListener('DOMContentLoaded', function(event) {
+      setupEyevinnPlayer('player-wrapper', '').then(function(player) {
         var muteOnStart = true;
         player.play(muteOnStart);
       });
-    });
+    }); {% endcomment %}
+
+    //http://localhost:8080/hls/test/index.m3u8
   </script>
 </body>
+
