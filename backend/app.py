@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, Response, jsonify
 from configparser import ConfigParser
 import time
+import traceback
 
 from util.logger import set_default_logger
 from util.watchdog import Watchdog
@@ -34,6 +35,7 @@ def root():
 def start_stream():
     # get_params
     params = request.get_json()
+    logger.info(f'params: {params}')
     channel_name = params['channel_name']  # HLS connection name
     youtube_url = params['youtube_url']  # source youtube url
 
@@ -52,12 +54,13 @@ def start_stream():
                 break
             time.sleep(1)
     except Watchdog:
-        return Response("Error start stream (timeout)", status_code=500)
+        return Response("Error start stream with timeout.", status=408)
     except Exception:
-        return Response("Error start stream", status_code=500)
+        traceback.print_exc()
+        return Response("Error start stream.", status=500)
     finally:
         watchdog.stop()
-    return Response("Success start stream", status_code=200)
+    return Response("Success start stream.", status=200)
 
 
 @app.route('/stream/stop', methods=['POST'])
@@ -72,13 +75,13 @@ def stop_stream():
         streamer.stop_video_stream()
         streamer.join()
     except Exception:
-        return Response("Error stop stream", status_code=500)
-    return Response("Success stop stream", status_code=200)
+        return Response("Error stop stream", status=500)
+    return Response("Success stop stream", status=200)
 
 
 @app.route('/streams', methods=['GET'])
 def get_streams():
-    return Response(jsonify([name for name in streamers.keys()]), status_code=200)
+    return Response(jsonify([name for name in streamers.keys()]), status=200)
 
 
 if __name__ == '__main__':

@@ -34,8 +34,8 @@
 
     function onClickStreamConnect() {
       console.log('Start stream connect.')
-      channel_name = document.getElementById('channel_name')
-      youtube_url = document.getElementById('youtube_url')
+      channel_name = document.getElementById('channel_name').InnerHTML
+      youtube_url = document.getElementById('youtube_url').InnerHTML
 
       fetch(`${server_url}/stream/start`, {
           method: "POST",
@@ -49,7 +49,7 @@
       )}).then((res) => {
         if (res.statuscode == 200) {
           consolg.log('Success start stream.')
-          startStream(`${server_url}/hls/${channel_name}/index.m3u8`)
+          startStream(`${media_server_url}/hls/${channel_name}/index.m3u8`)
         }
         else {
           console.log('Error start stream.')
