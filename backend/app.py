@@ -1,4 +1,8 @@
 from flask import Flask, render_template
+from .util.logger import set_default_logger
+
+
+logger = set_default_logger('main_logger')
 
 
 app = Flask(__name__)

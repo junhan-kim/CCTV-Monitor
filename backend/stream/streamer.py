@@ -4,6 +4,10 @@ import subprocess
 from configparser import ConfigParser
 from threading import Event
 import traceback
+import logging
+
+
+logger = logging.getLogger('main_logger')
 
 
 class Streamer:
@@ -38,7 +42,7 @@ class Streamer:
         best = video.getbest(preftype="mp4")
 
         if video.duration != '00:00:00':
-            print('this video is not live stream')
+            logger.error('This video is not live stream.')
             return
 
         cap = cv2.VideoCapture(best.url)
@@ -52,7 +56,7 @@ class Streamer:
             while not self.stream_stop_event.is_set():
                 ret, frame = cap.read()
                 if not ret:
-                    print('frame is empty')
+                    logger.warning('Frame is empty.')
                     break
                 streaming_process.stdin.write(frame.tobytes())
         except Exception:
@@ -61,7 +65,7 @@ class Streamer:
             streaming_process.stdin.close()
             streaming_process.terminate()
             cap.release()
-            print('terminate')
+            logger.warning('Terminate stream process.')
 
 
 if __name__ == '__main__':
