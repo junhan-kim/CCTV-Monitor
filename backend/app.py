@@ -12,7 +12,7 @@ logger = set_default_logger('main_logger')
 
 # init config
 parser = ConfigParser()
-parser.read('../config.ini')
+parser.read('config.ini')
 api_key = parser.get('settings', 'api_key')
 
 # init flask app
@@ -46,8 +46,11 @@ def start_stream():
 
         # check start stream
         while True:
+            logger.info('check start stream.')
             if streamer.check_start_stream():
+                logger.info('Success start stream.')
                 break
+            time.sleep(1)
     except Watchdog:
         return Response("Error start stream (timeout)", status_code=500)
     except Exception:

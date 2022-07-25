@@ -7,7 +7,7 @@
     <form>
       Channel Name : <input id='channel_name' type='text'/><br>
       Youtube URL : <input id='youtube_url' type='text'/><br>
-      <input type='submit' onclick=onClickStreamConnect(), value='스트림 연결'>
+      <input type='submit' onclick="onClickStreamConnect()", value='스트림 연결'>
     </form>
   </div>
 
@@ -33,6 +33,7 @@
     }
 
     function onClickStreamConnect() {
+      console.log('Start stream connect.')
       channel_name = document.getElementById('channel_name')
       youtube_url = document.getElementById('youtube_url')
 
@@ -47,6 +48,7 @@
           }
       )}).then((res) => {
         if (res.statuscode == 200) {
+          consolg.log('Success start stream.')
           startStream(`${server_url}/hls/${channel_name}/index.m3u8`)
         }
         else {
