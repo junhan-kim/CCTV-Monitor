@@ -5,15 +5,18 @@ from configparser import ConfigParser
 from threading import Event
 import traceback
 import logging
+from threading import Thread
 
 
 logger = logging.getLogger('main_logger')
 
 
-class Streamer:
+class Streamer(Thread):
     def __init__(self, api_key):
-        self.stream_stop_event = Event()
+        Thread.__init__(self)
         self.set_api_key(api_key)
+        self.stream_stop_event = Event()
+        self.stream_start_event = Event()
 
     def set_api_key(self, api_key):
         pafy.set_api_key(api_key)
@@ -38,6 +41,9 @@ class Streamer:
     def stop_video_stream(self):
         self.stream_stop_event.set()
 
+    def check_start_stream(self):
+        return self.stream_start_event.is_set()
+
     def start_video_stream(self, source_url, dest_url):
         video = pafy.new(source_url)
         best = video.getbest(preftype="mp4")
@@ -60,6 +66,10 @@ class Streamer:
                     logger.warning('Frame is empty.')
                     break
                 streaming_process.stdin.write(frame.tobytes())
+
+                if not self.stream_start_event.is_set():
+                    self.stream_start_event.set()
+
         except Exception:
             traceback.print_exc()
         finally:
@@ -67,3 +77,6 @@ class Streamer:
             streaming_process.terminate()
             cap.release()
             logger.warning('Terminate stream process.')
+
+    def run(self, source_url, dest_url):
+        self.start_video_stream(source_url, dest_url)

@@ -1,7 +1,9 @@
 from flask import Flask, render_template, request, Response, jsonify
 from configparser import ConfigParser
+import time
 
 from util.logger import set_default_logger
+from util.watchdog import Watchdog
 from stream.streamer import Streamer
 
 
@@ -36,12 +38,22 @@ def start_stream():
     youtube_url = params['youtube_url']  # source youtube url
 
     # set streamer
+    watchdog = Watchdog(30)
     try:
         streamer = Streamer(api_key=api_key)
         streamers[channel_name] = streamer
-        streamer.start_video_stream(youtube_url, f'{dest_url}/{channel_name}')
+        streamer.start(youtube_url, f'{dest_url}/{channel_name}')
+
+        # check start stream
+        while True:
+            if streamer.check_start_stream():
+                break
+    except Watchdog:
+        return Response("Error start stream (timeout)", status_code=500)
     except Exception:
         return Response("Error start stream", status_code=500)
+    finally:
+        watchdog.stop()
     return Response("Success start stream", status_code=200)
 
 
@@ -55,6 +67,7 @@ def stop_stream():
     try:
         streamer = streamers[channel_name]
         streamer.stop_video_stream()
+        streamer.join()
     except Exception:
         return Response("Error stop stream", status_code=500)
     return Response("Success stop stream", status_code=200)
