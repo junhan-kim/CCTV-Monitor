@@ -6,6 +6,8 @@ RUN ln -s /usr/bin/pip3 /usr/bin/pip
 
 COPY . /backend
 WORKDIR /backend
+
+RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 EXPOSE 8989
