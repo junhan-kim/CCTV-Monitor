@@ -12,7 +12,7 @@ def set_default_logger(logger_name):
     logger.addHandler(stream_handler)
 
     # add file handler
-    file_handler = logging.FileHandler('../log/main_logger.log')
+    file_handler = logging.FileHandler('log/main_logger.log')
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
 
