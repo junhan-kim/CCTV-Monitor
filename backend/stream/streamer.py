@@ -56,8 +56,8 @@ class Streamer(Thread):
                 ret, frame = cap.read()
                 if not ret:
                     logger.warning('Frame is empty.')
-                    break
-                streaming_process.stdin.write(frame.tobytes())
+                else:
+                    streaming_process.stdin.write(frame.tobytes())
 
         except Exception:
             traceback.print_exc()
