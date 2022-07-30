@@ -2,6 +2,7 @@ import logging
 import subprocess
 import traceback
 from threading import Event, Thread
+from multiprocessing import Process
 import re
 
 import cv2
@@ -11,9 +12,9 @@ import pafy
 logger = logging.getLogger('main_logger')
 
 
-class Streamer(Thread):
+class Streamer(Process):
     def __init__(self, api_key, source_url, dest_url):
-        Thread.__init__(self)
+        Process.__init__(self)
         self.set_api_key(api_key)
         self.stream_stop_event = Event()
         self.source_url = source_url
