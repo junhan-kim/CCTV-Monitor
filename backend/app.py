@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request, Response, jsonify
+from flask_cors import CORS
 from configparser import ConfigParser
 import time
 import traceback
@@ -19,6 +20,7 @@ api_key = parser.get('settings', 'api_key')
 
 # init flask app
 app = Flask(__name__)
+CORS(app)
 
 # set default params
 dest_url = "rtmp://localhost/live"  # rtmp + application name
