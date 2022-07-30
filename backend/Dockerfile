@@ -5,6 +5,8 @@ RUN apt-get install -y libgl1-mesa-glx
 RUN ln -s /usr/bin/python3 /usr/bin/python
 RUN ln -s /usr/bin/pip3 /usr/bin/pip
 
+RUN apt-get install -y ffmpeg
+
 WORKDIR /backend
 COPY ./requirements.txt .
 RUN pip install --upgrade pip

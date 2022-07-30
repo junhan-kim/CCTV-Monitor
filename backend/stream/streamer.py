@@ -66,15 +66,15 @@ class Streamer(Thread):
             logger.error('This video is not live stream.')
             return
 
-        cap = cv2.VideoCapture(best.url)
-        fps = int(cap.get(cv2.CAP_PROP_FPS))
-        width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-        height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-
-        streaming_process = self.start_streaming(dest_url, width, height)
-        self.check_start_stream()
-
         try:
+            cap = cv2.VideoCapture(best.url)
+            fps = int(cap.get(cv2.CAP_PROP_FPS))
+            width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+            height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+            streaming_process = self.start_streaming(dest_url, width, height)
+            self.check_start_stream()
+
             while not self.stream_stop_event.is_set():
                 ret, frame = cap.read()
                 if not ret:
