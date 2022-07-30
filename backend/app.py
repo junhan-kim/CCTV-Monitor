@@ -1,13 +1,11 @@
-from flask import Flask, render_template, request, Response, jsonify
-from flask_cors import CORS
-from configparser import ConfigParser
-import time
 import traceback
-from threading import Event
+from configparser import ConfigParser
 
-from util.logger import set_default_logger
-from util.watchdog import Watchdog
+from flask import Flask, Response, jsonify, render_template, request
+from flask_cors import CORS
+
 from stream.streamer import Streamer
+from util.logger import set_default_logger
 
 
 # init logger
@@ -43,32 +41,14 @@ def start_stream():
     youtube_url = params['youtube_url']  # source youtube url
 
     # set streamer
-    watchdog = Watchdog(10)
     try:
         streamer = Streamer(api_key=api_key, source_url=youtube_url, dest_url=f'{dest_url}/{channel_name}')
         streamers[channel_name] = streamer
         streamer.start()
-
-        # check start stream
-        timeout_event = Event()
-        while not timeout_event.is_set():
-            logger.info('check start stream.')
-            if streamer.check_start_stream():
-                logger.info('Success start stream.')
-                break
-            time.sleep(1)
-    except Watchdog:
-        logger.error('TimeoutError')
-        traceback.print_exc()
-        timeout_event.is_set()
-        return Response("Error start stream with timeout.", status=408)
     except Exception:
-        logger.error('Exception')
+        logger.error('Exception occur in stream start.')
         traceback.print_exc()
-        timeout_event.is_set()
         return Response("Error start stream.", status=500)
-    finally:
-        watchdog.stop()
     return Response("Success start stream.", status=200)
 
 

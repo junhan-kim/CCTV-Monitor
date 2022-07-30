@@ -17,4 +17,4 @@ class Watchdog(Exception):
         self.timer.cancel()
 
     def defaultHandler(self):
-        raise TimeoutError
+        raise self

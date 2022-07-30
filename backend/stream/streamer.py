@@ -1,11 +1,14 @@
 import pafy
 import cv2
+import time
 import subprocess
 from configparser import ConfigParser
 from threading import Event
 import traceback
 import logging
 from threading import Thread
+
+from util.watchdog import Watchdog
 
 
 logger = logging.getLogger('main_logger')
@@ -44,7 +47,16 @@ class Streamer(Thread):
         self.stream_stop_event.set()
 
     def check_start_stream(self):
-        return self.stream_start_event.is_set()
+        try:
+            watchdog = Watchdog(10)
+            while not self.stream_start_event.is_set():
+                logger.info('Check stream start.')
+                time.sleep(1)
+            logger.info('Success stream start.')
+        except Watchdog:
+            raise TimeoutError
+        finally:
+            watchdog.stop()
 
     def start_video_stream(self, source_url, dest_url):
         video = pafy.new(source_url)
@@ -60,6 +72,7 @@ class Streamer(Thread):
         height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
         streaming_process = self.start_streaming(dest_url, width, height)
+        self.check_start_stream()
 
         try:
             while not self.stream_stop_event.is_set():
