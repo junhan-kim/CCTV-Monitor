@@ -2,6 +2,7 @@ import logging
 import subprocess
 import traceback
 from threading import Event, Thread
+import re
 
 import cv2
 import pafy
@@ -42,16 +43,10 @@ class Streamer(Thread):
         self.stream_stop_event.set()
 
     def start_video_stream(self, source_url, dest_url):
-        video = pafy.new(source_url)
-        best = video.getbest(preftype="mp4")
-
-        if video.duration != '00:00:00':
-            logger.error('This video is not live stream.')
-            return
+        source_url = self.convert_source_url_to_opencv_url(source_url)
 
         try:
-            cap = cv2.VideoCapture(best.url)
-            fps = int(cap.get(cv2.CAP_PROP_FPS))
+            cap = cv2.VideoCapture(source_url)
             width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
             height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
@@ -71,6 +66,23 @@ class Streamer(Thread):
             streaming_process.terminate()
             cap.release()
             logger.warning('Terminate stream process.')
+
+    def convert_source_url_to_opencv_url(self, source_url):
+        # youtube url
+        if re.match('^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$', source_url):
+            logger.info('source: youtube url')
+            video = pafy.new(source_url)
+            if video.duration != '00:00:00':
+                logger.error('This video is not live stream.')
+                raise Exception('This video is not live stream.')
+            best = video.getbest(preftype="mp4")
+            return best.url
+        # m3u8 url
+        elif re.match('.m3u8$', source_url):
+            logger.info('source: m3u8 url')
+            return source_url
+        else:
+            raise Exception('Source url match Failed')
 
     def run(self):
         self.start_video_stream(self.source_url, self.dest_url)
