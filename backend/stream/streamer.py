@@ -78,7 +78,7 @@ class Streamer(Thread):
             best = video.getbest(preftype="mp4")
             return best.url
         # m3u8 url
-        elif re.match('.m3u8$', source_url):
+        elif re.match('.*m3u8$', source_url):
             logger.info('source: m3u8 url')
             return source_url
         else:

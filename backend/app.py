@@ -21,7 +21,7 @@ app = Flask(__name__)
 CORS(app)
 
 # set default params
-dest_url = "rtmp://localhost/live"  # rtmp + application name
+dest_url = "rtmp://media_server/live"  # rtmp + application name
 
 # streamers
 streamers = {}
