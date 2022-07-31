@@ -21,14 +21,12 @@
   <script>
     // set params
     server_url = 'http://localhost:8989'
-    media_server_url = 'http://media_server:8080'
+    media_server_url = 'http://media_server'
 
     function startStream(stream_url) {
-      document.addEventListener('DOMContentLoaded', function(event) {
-        setupEyevinnPlayer('player-wrapper', stream_url).then(function(player) {
-          var muteOnStart = true;
-          player.play(muteOnStart);
-        });
+      setupEyevinnPlayer('player-wrapper', stream_url).then(function(player) {
+        var muteOnStart = true;
+        player.play(muteOnStart);
       });
     }
 
@@ -49,8 +47,9 @@
       )}).then((res) => {
         console.log(res.status)
         if (res.status == 200) {
-          console.log('Success start stream.')
-          startStream(`${media_server_url}/hls/${channel_name}/index.m3u8`)
+          stream_url = `${media_server_url}/hls/${channel_name}/index.m3u8`
+          console.log(`Success start stream from ${stream_url}`)
+          startStream(stream_url)
         }
         else {
           console.log('Error start stream.')
