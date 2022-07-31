@@ -52,6 +52,7 @@ class Streamer(Process):
             height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
             streaming_process = self.start_streaming(dest_url, width, height)
+            logger.info('start streaming')
 
             while not self.stream_stop_event.is_set():
                 ret, frame = cap.read()
