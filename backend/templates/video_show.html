@@ -6,7 +6,7 @@
   <div>
     <form>
       Channel Name : <input id='channel_name' type='text'/><br>
-      Youtube URL : <input id='youtube_url' type='text'/><br>
+      Youtube URL : <input id='source_url' type='text'/><br>
       <input type='button' onclick="onClickStreamConnect()", value='스트림 연결'>
     </form>
   </div>
@@ -33,7 +33,7 @@
     function onClickStreamConnect() {
       console.log('Start stream connect.')
       channel_name = document.getElementById('channel_name').value
-      youtube_url = document.getElementById('youtube_url').value
+      source_url = document.getElementById('source_url').value
 
       fetch(`${server_url}/stream/start`, {
           method: "POST",
@@ -42,7 +42,7 @@
           },
           body: JSON.stringify({
             channel_name: channel_name,
-            youtube_url: youtube_url
+            source_url: source_url
           }
       )}).then((res) => {
         console.log(res.status)

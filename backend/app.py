@@ -39,15 +39,15 @@ def start_stream():
     params = request.get_json()
     logger.info(f'params: {params}')
     channel_name = params['channel_name']  # HLS connection name
-    youtube_url = params['youtube_url']  # source youtube url
+    source_url = params['source_url']  # source youtube url
 
     # set streamer
     try:
-        streamer = Streamer(youtube_api_key=youtube_api_key, source_url=youtube_url,
+        streamer = Streamer(youtube_api_key=youtube_api_key, source_url=source_url,
                             dest_url=f'{dest_url}/{channel_name}')
         streamers[channel_name] = streamer
         streamer.start()
-        time.sleep(10)
+        time.sleep(20)  # index.m3u8 생기는데까지 걸리는 지연시간 부여
 
     except Exception:
         logger.error('Error start stream from server.')
