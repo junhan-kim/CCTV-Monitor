@@ -46,10 +46,17 @@ def start_stream():
         streamers[channel_name] = streamer
         streamer.start()
     except Exception:
-        logger.error('Exception occur in stream start.')
+        logger.error('Error start stream from server.')
         traceback.print_exc()
-        return Response("Error start stream.", status=500)
-    return Response("Success start stream.", status=200)
+        return jsonify({
+            'status': 500,
+            'msg': 'Error start stream from server.'
+        })
+    logger.info('Success start stream.')
+    return jsonify({
+        'status': 200,
+        'msg': 'Success start stream.'
+    })
 
 
 @app.route('/stream/stop', methods=['POST'])
