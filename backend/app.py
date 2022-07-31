@@ -15,7 +15,7 @@ logger = set_default_logger('main_logger')
 # init config
 parser = ConfigParser()
 parser.read('config.ini')
-api_key = parser.get('settings', 'api_key')
+youtube_api_key = parser.get('settings', 'youtube_api_key')
 
 # init flask app
 app = Flask(__name__)
@@ -43,7 +43,8 @@ def start_stream():
 
     # set streamer
     try:
-        streamer = Streamer(api_key=api_key, source_url=youtube_url, dest_url=f'{dest_url}/{channel_name}')
+        streamer = Streamer(youtube_api_key=youtube_api_key, source_url=youtube_url,
+                            dest_url=f'{dest_url}/{channel_name}')
         streamers[channel_name] = streamer
         streamer.start()
         time.sleep(10)

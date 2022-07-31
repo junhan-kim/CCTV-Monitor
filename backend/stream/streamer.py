@@ -13,14 +13,14 @@ logger = logging.getLogger('main_logger')
 
 
 class Streamer(Process):
-    def __init__(self, api_key, source_url, dest_url):
+    def __init__(self, youtube_api_key, source_url, dest_url):
         Process.__init__(self)
-        self.set_api_key(api_key)
+        self.set_youtube_api_key(youtube_api_key)
         self.stream_stop_event = Event()
         self.source_url = source_url
         self.dest_url = dest_url
 
-    def set_api_key(self, api_key):
+    def set_youtube_api_key(self, api_key):
         pafy.set_api_key(api_key)
 
     def start_streaming(self, dest_url, width, height):
