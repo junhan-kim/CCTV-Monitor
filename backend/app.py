@@ -46,7 +46,7 @@ def start_stream():
         streamer = Streamer(api_key=api_key, source_url=youtube_url, dest_url=f'{dest_url}/{channel_name}')
         streamers[channel_name] = streamer
         streamer.start()
-        time.sleep(20)
+        time.sleep(10)
 
     except Exception:
         logger.error('Error start stream from server.')
