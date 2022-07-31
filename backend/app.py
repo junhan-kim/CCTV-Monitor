@@ -1,5 +1,6 @@
 import traceback
 from configparser import ConfigParser
+import time
 
 from flask import Flask, Response, jsonify, render_template, request
 from flask_cors import CORS
@@ -45,6 +46,8 @@ def start_stream():
         streamer = Streamer(api_key=api_key, source_url=youtube_url, dest_url=f'{dest_url}/{channel_name}')
         streamers[channel_name] = streamer
         streamer.start()
+        time.sleep(5)
+
     except Exception:
         logger.error('Error start stream from server.')
         traceback.print_exc()
