@@ -36,10 +36,14 @@ def root():
 @app.route('/stream/start', methods=['POST'])
 def start_stream():
     # get_params
-    params = request.get_json()
-    logger.info(f'params: {params}')
-    channel_name = params['channelName']  # HLS connection name
-    source_url = params['sourceUrl']  # source youtube url
+    try:
+        params = request.get_json()
+        logger.info(f'params: {params}')
+        channel_name = params['channelName']  # HLS connection name
+        source_url = params['sourceUrl']  # source youtube url
+    except KeyError:
+        logger.error('Invalid Param in /stream/start')
+        traceback.print_exc()
 
     # set streamer
     try:
@@ -66,8 +70,12 @@ def start_stream():
 @app.route('/stream/stop', methods=['POST'])
 def stop_stream():
     # get_params
-    params = request.get_json()
-    channel_name = params['channelName']
+    try:
+        params = request.get_json()
+        channel_name = params['channelName']
+    except KeyError:
+        logger.error('Invalid Param in /stream/stop')
+        traceback.print_exc()
 
     # stop streamer
     try:
