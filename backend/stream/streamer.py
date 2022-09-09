@@ -35,6 +35,7 @@ class Streamer(Process):
                    '-c:v', 'libx264',
                    '-pix_fmt', 'yuv420p',
                    '-preset', 'ultrafast',
+                   '-max_muxing_queue_size', '1024',
                    '-f', 'flv',
                    f'{dest_url}']
         proc = subprocess.Popen(command, stdin=subprocess.PIPE, shell=False)
