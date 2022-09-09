@@ -3,7 +3,7 @@ import traceback
 from configparser import ConfigParser
 
 import redis
-from flask import Flask, Response, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, make_response
 from flask_cors import CORS
 
 from stream.streamer import Streamer
@@ -53,8 +53,8 @@ def start_stream():
     except Exception:
         logger.error('Error start stream from server.')
         traceback.print_exc()
-        return Response('Error start stream from server.', status=500)
-    return Response('Success start stream.', status=200)
+        return make_response('Error start stream from server.', 500)
+    return make_response('Success start stream.', 200)
 
 
 @app.route('/stream/stop', methods=['POST'])
@@ -71,16 +71,16 @@ def stop_stream():
         streamer.join()
         streamers.pop(channel_name)
     except Exception:
-        return Response("Error stop stream", status=500)
-    return Response("Success stop stream", status=200)
+        return make_response("Error stop stream", 500)
+    return make_response("Success stop stream", 200)
 
 
 @app.route('/streamers', methods=['GET'])
 def get_streamers():
-    streamer_names = list(streamers.keys())
+    streamer_names = str(list(streamers.keys()))
     logger.info(f'streamer_names: {streamer_names}')
     res = {'streamers': streamer_names}
-    return Response(jsonify(res), status=200)
+    return make_response(jsonify(res), 200)
 
 
 if __name__ == '__main__':
