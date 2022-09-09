@@ -1,13 +1,13 @@
+import time
 import traceback
 from configparser import ConfigParser
-import time
 
+import redis
 from flask import Flask, Response, jsonify, render_template, request
 from flask_cors import CORS
 
 from stream.streamer import Streamer
 from util.logger import set_default_logger
-
 
 # init logger
 logger = set_default_logger('main_logger')
@@ -21,10 +21,11 @@ youtube_api_key = parser.get('settings', 'youtube_api_key')
 app = Flask(__name__)
 CORS(app)
 
+# init redis
+rd = redis.StrictRedis(host='localhost', port=6379, db=0)
+
 # set default params
 dest_url = "rtmp://media_server/live"  # rtmp + application name
-
-# streamers
 streamers = {}
 
 
@@ -81,10 +82,11 @@ def stop_stream():
     return Response("Success stop stream", status=200)
 
 
-@app.route('/streams', methods=['GET'])
-def get_streams():
-    return Response(jsonify([name for name in streamers.keys()]), status=200)
+@app.route('/streamers', methods=['GET'])
+def get_streamers():
+    logger.info()
+    return Response(jsonify(list(streamers.keys())), status=200)
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=8989, threaded=False)
+    app.run(host='0.0.0.0', port=8989, threaded=True)

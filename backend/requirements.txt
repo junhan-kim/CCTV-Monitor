@@ -4,3 +4,4 @@ pafy==0.5.5
 youtube-dl==2020.12.2
 configparser==5.2.0
 flask_cors==3.0.10
+redis==4.3.4
