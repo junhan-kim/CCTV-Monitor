@@ -77,7 +77,7 @@ def stop_stream():
 
 @app.route('/streamers', methods=['GET'])
 def get_streamers():
-    streamer_names = str(list(streamers.keys()))
+    streamer_names = list(streamers.keys())
     logger.info(f'streamer_names: {streamer_names}')
     res = {'streamers': streamer_names}
     return make_response(jsonify(res), 200)
