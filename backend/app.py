@@ -38,8 +38,8 @@ def start_stream():
     # get_params
     params = request.get_json()
     logger.info(f'params: {params}')
-    channel_name = params['channel_name']  # HLS connection name
-    source_url = params['source_url']  # source youtube url
+    channel_name = params['channelName']  # HLS connection name
+    source_url = params['sourceUrl']  # source youtube url
 
     # set streamer
     try:
@@ -67,7 +67,7 @@ def start_stream():
 def stop_stream():
     # get_params
     params = request.get_json()
-    channel_name = params['channel_name']
+    channel_name = params['channelName']
 
     # stop streamer
     try:
