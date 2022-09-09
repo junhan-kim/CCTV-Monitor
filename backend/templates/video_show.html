@@ -4,15 +4,17 @@
 </head>
 <body>
   <div>
-    <form>
-      Channel Name : <input id='channel_name' type='text'/><br>
-      Youtube URL : <input id='source_url' type='text'/><br>
-      <input type='button' onclick="onClickStreamConnect()", value='스트림 연결'>
-    </form>
+    <div>
+      <form>
+        Channel Name : <input id='channelName' type='text'/><br>
+        Youtube URL : <input id='sourceUrl' type='text'/><br>
+        <input type='button' onclick="onClickStreamConnect()", value='스트림 연결'>
+        <input type='button' onclick="onClickStreamDisconnect()", value='스트림 종료'>
+      </form>
+    </div>
+    <div id="player-wrapper"></div>  <!-- The element where the player will be placed -->
   </div>
 
-  <!-- The element where the player will be placed -->
-  <div id="player-wrapper"></div>
 
   <!-- Eyevinn HTML Player Javascript -->
   <script src="https://player.eyevinn.technology/v0.4.2/build/eyevinn-html-player.js" type="text/javascript"></script>
@@ -20,20 +22,28 @@
   <!-- Initiate the player and auto-play with audio muted -->
   <script>
     // set params
-    server_url = 'http://localhost:8989'
-    media_server_url = 'http://localhost:8080'
+    let server_url = 'http://localhost:8989'
+    let media_server_url = 'http://localhost:8080'
+    
+    let player = document.getElementById('player-wrapper')
 
-    function startStream(stream_url) {
-      setupEyevinnPlayer('player-wrapper', stream_url).then(function(player) {
-        var muteOnStart = true;
+
+    function startStream(streamUrl) {
+      player.style.visibility="visible"
+      setupEyevinnPlayer('player-wrapper', streamUrl).then(function(player) {
+        let muteOnStart = true;
         player.play(muteOnStart);
       });
     }
 
+    function stopStream() {
+      player.style.visibility="hidden"
+    }
+
     function onClickStreamConnect() {
-      console.log('Start stream connect.')
-      channel_name = document.getElementById('channel_name').value
-      source_url = document.getElementById('source_url').value
+      console.log('Stream Connect.')
+      let channelName = document.getElementById('channelName').value
+      let sourceUrl = document.getElementById('sourceUrl').value
 
       fetch(`${server_url}/stream/start`, {
           method: "POST",
@@ -41,20 +51,43 @@
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            channel_name: channel_name,
-            source_url: source_url
+            channelName: channelName,
+            sourceUrl: sourceUrl
           }
       )}).then((res) => {
         console.log(res.status)
         if (res.status == 200) {
-          stream_url = `${media_server_url}/hls/${channel_name}/index.m3u8`
-          console.log(`Success start stream from ${stream_url}`)
-          startStream(stream_url)
+          let streamUrl = `${media_server_url}/hls/${channelName}/index.m3u8`
+          console.log(`Success to connect stream from ${streamUrl}`)
+          startStream(streamUrl)
         }
         else {
-          console.log('Error start stream.')
+          console.log('Error stream connection.')
         }
       });
+    }
+
+    function onClickStreamDisconnect() {
+      console.log('Stream Disconnect.')
+      let channelName = document.getElementById('channelName').value
+
+      fetch(`${server_url}/stream/stop`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          channelName: channelName
+        }
+      )}).then(res => {
+        console.log(res.status)
+        if (res.status == 200) {
+          console.log(`Success to disconnect stream from ${channelName}`)
+        }
+        else {
+          console.log('Error stop stream.')
+        }
+      })
     }
 
   </script>

@@ -56,7 +56,7 @@ def start_stream():
             'status': 500,
             'msg': 'Error start stream from server.'
         })
-    logger.info('Success start stream.')
+
     return jsonify({
         'status': 200,
         'msg': 'Success start stream.'
