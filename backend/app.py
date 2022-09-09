@@ -68,6 +68,7 @@ def stop_stream():
     # get_params
     params = request.get_json()
     channel_name = params['channelName']
+    logger.info(f'params: {params}')
 
     # stop streamer
     try:
