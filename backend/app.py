@@ -74,6 +74,7 @@ def stop_stream():
         streamer = streamers[channel_name]
         streamer.stop_video_stream()
         streamer.join()
+        streamers.pop(channel_name)
     except Exception:
         return Response("Error stop stream", status=500)
     return Response("Success stop stream", status=200)
