@@ -1,8 +1,7 @@
 import logging
 import subprocess
 import traceback
-from threading import Event, Thread
-from multiprocessing import Process
+from multiprocessing import Process, Event
 import re
 
 import cv2
