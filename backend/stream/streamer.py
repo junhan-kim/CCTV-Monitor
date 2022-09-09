@@ -37,6 +37,8 @@ class Streamer(Process):
                    '-preset', 'ultrafast',
                    '-max_muxing_queue_size', '1024',
                    '-f', 'flv',
+                   '-hide_banner',
+                   '-loglevel', 'error',
                    f'{dest_url}']
         proc = subprocess.Popen(command, stdin=subprocess.PIPE, shell=False)
         return proc
