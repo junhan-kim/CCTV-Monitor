@@ -46,22 +46,15 @@ def start_stream():
     try:
         streamer = Streamer(youtube_api_key=youtube_api_key, source_url=source_url,
                             dest_url=f'{dest_url}/{channel_name}')
-        streamers[channel_name] = streamer
         streamer.start()
         time.sleep(20)  # index.m3u8 생기는데까지 걸리는 지연시간 부여
+        streamers[channel_name] = streamer
 
     except Exception:
         logger.error('Error start stream from server.')
         traceback.print_exc()
-        return jsonify({
-            'status': 500,
-            'msg': 'Error start stream from server.'
-        })
-
-    return jsonify({
-        'status': 200,
-        'msg': 'Success start stream.'
-    })
+        return Response('Error start stream from server.', status=500)
+    return Response('Success start stream.', status=200)
 
 
 @app.route('/stream/stop', methods=['POST'])
@@ -84,8 +77,10 @@ def stop_stream():
 
 @app.route('/streamers', methods=['GET'])
 def get_streamers():
-    logger.info()
-    return Response(jsonify(list(streamers.keys())), status=200)
+    streamer_names = list(streamers.keys())
+    logger.info(f'streamer_names: {streamer_names}')
+    res = {'streamers': streamer_names}
+    return Response(jsonify(res), status=200)
 
 
 if __name__ == '__main__':
