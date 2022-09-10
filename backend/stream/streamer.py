@@ -24,13 +24,37 @@ class Streamer(Process):
         self.dest_url = dest_url
         self.opencv_url = self.convert_source_url_to_opencv_url(source_url)
 
+        # init stream process
+        self.cap = cv2.VideoCapture(self.opencv_url)
+        self.width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        self.height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        self.streaming_process = self.init_stream_process(self.dest_url, self.width, self.height)
+        logger.info('start stream process')
+
     def set_youtube_api_key(self, api_key):
         pafy.set_api_key(api_key)
 
     def is_youtube_url(self, url):
         return re.match('^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$', url)
 
-    def start_streaming(self, dest_url, width, height):
+    def convert_source_url_to_opencv_url(self, source_url):
+        # youtube url
+        if self.is_youtube_url(source_url):
+            logger.info('source: youtube url')
+            video = pafy.new(source_url)
+            if video.duration != '00:00:00':
+                logger.error('This video is not live stream.')
+                raise Exception('This video is not live stream.')
+            best = video.getbest(preftype="mp4")
+            return best.url
+        # m3u8 url
+        elif re.match('.*m3u8$', source_url):
+            logger.info('source: m3u8 url')
+            return source_url
+        else:
+            raise Exception('Source url match Failed')
+
+    def init_stream_process(self, dest_url, width, height):
         command = ['ffmpeg',
                    '-y',
                    '-f', 'rawvideo',
@@ -50,49 +74,27 @@ class Streamer(Process):
         proc = subprocess.Popen(command, stdin=subprocess.PIPE, shell=False)
         return proc
 
-    def stop_video_stream(self):
-        self.stream_stop_event.set()
-
     def start_video_stream(self):
         try:
-            cap = cv2.VideoCapture(self.opencv_url)
-            width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-            height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-
-            streaming_process = self.start_streaming(self.dest_url, width, height)
-            logger.info('start streaming')
-
             while not self.stream_stop_event.is_set():
-                ret, frame = cap.read()
+                ret, frame = self.cap.read()
                 if not ret:
                     logger.warning('Frame is empty.')
                 else:
-                    streaming_process.stdin.write(frame.tobytes())
-
+                    self.streaming_process.stdin.write(frame.tobytes())
         except Exception:
             traceback.print_exc()
         finally:
-            streaming_process.stdin.close()
-            streaming_process.terminate()
-            cap.release()
-            logger.warning('Terminate stream process.')
+            self.terminate_video_stream()
 
-    def convert_source_url_to_opencv_url(self, source_url):
-        # youtube url
-        if self.is_youtube_url(source_url):
-            logger.info('source: youtube url')
-            video = pafy.new(source_url)
-            if video.duration != '00:00:00':
-                logger.error('This video is not live stream.')
-                raise Exception('This video is not live stream.')
-            best = video.getbest(preftype="mp4")
-            return best.url
-        # m3u8 url
-        elif re.match('.*m3u8$', source_url):
-            logger.info('source: m3u8 url')
-            return source_url
-        else:
-            raise Exception('Source url match Failed')
+    def stop_video_stream(self):
+        self.stream_stop_event.set()
+
+    def terminate_video_stream(self):
+        self.streaming_process.stdin.close()
+        self.streaming_process.terminate()
+        self.cap.release()
+        logger.warning('Terminate stream process.')
 
     def run(self):
         self.start_video_stream()

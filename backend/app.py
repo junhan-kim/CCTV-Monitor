@@ -44,8 +44,8 @@ def start_stream():
 
     # set streamer
     try:
-        streamer = Streamer(youtube_api_key=youtube_api_key, source_url=source_url,
-                            dest_url=f'{dest_url}/{channel_name}')
+        streamer = Streamer(source_url=source_url, dest_url=f'{dest_url}/{channel_name}',
+                            youtube_api_key=youtube_api_key)
         streamer.start()
         time.sleep(20)  # index.m3u8 생기는데까지 걸리는 지연시간 부여
         streamers[channel_name] = streamer
