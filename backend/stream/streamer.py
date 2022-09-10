@@ -3,7 +3,6 @@ import subprocess
 import traceback
 from multiprocessing import Process, Event
 import re
-import time
 
 import cv2
 import pafy
@@ -41,14 +40,14 @@ class Streamer(Process):
         height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         logger.info(f'width x height: {width} x {height}')
 
-        self.fps = int(cap.get(cv2.CAP_PROP_FPS))
-        self.min_fps = 5
-        self.max_fps = 120
-        self.default_fps = 30
-        if self.fps < self.min_fps or self.fps > self.max_fps:
-            logger.warning(f'fps: {self.fps} is invalid. fps is set to {self.default_fps}')
-            self.fps = self.default_fps
-        logger.info(f'fps: {self.fps}')
+        # self.fps = int(cap.get(cv2.CAP_PROP_FPS))
+        # self.min_fps = 5
+        # self.max_fps = 120
+        # self.default_fps = 30
+        # if self.fps < self.min_fps or self.fps > self.max_fps:
+        #     logger.warning(f'fps: {self.fps} is invalid. fps is set to {self.default_fps}')
+        #     self.fps = self.default_fps
+        # logger.info(f'fps: {self.fps}')
 
         self.streaming_process = self.init_stream_process(self.dest_url, width, height)
         cap.release()
