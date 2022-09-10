@@ -116,7 +116,7 @@ class Streamer(Process):
                 else:
                     self.streaming_process.stdin.write(frame.tobytes())
                     self.err_cnt = 0
-                time.sleep(1 / self.fps)
+                # time.sleep(1 / self.fps)
 
         except Exception:
             traceback.print_exc()
