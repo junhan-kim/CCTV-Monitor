@@ -20,12 +20,14 @@ class Streamer(Process):
             self.set_youtube_api_key(youtube_api_key)
         else:
             if self.is_youtube_url(source_url):
+                logger.error('youtube_api_key not exist with youtube source url')
                 raise Exception('youtube_api_key not exist with youtube source url.')
 
         # params
         self.source_url = source_url
         self.dest_url = dest_url
         self.opencv_url = self.convert_source_url_to_opencv_url(source_url)
+        logger.info(f'opencv_url: {self.opencv_url}')
 
         # error handling
         self.stream_stop_event = Event()
@@ -37,6 +39,7 @@ class Streamer(Process):
         self.width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         self.height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
         self.streaming_process = self.init_stream_process(self.dest_url, self.width, self.height)
+        self.cap.release()
         logger.info('start stream process')
 
     def set_youtube_api_key(self, api_key):
@@ -84,6 +87,9 @@ class Streamer(Process):
 
     def start_video_stream(self):
         try:
+            logger.info('Starting video stream')
+            self.cap = cv2.VideoCapture(self.opencv_url)  # since opencv restriction of sharing variable with __init__
+
             while not self.stream_stop_event.is_set():
                 ret, frame = self.cap.read()
                 if not ret:
@@ -97,12 +103,14 @@ class Streamer(Process):
                 else:
                     self.streaming_process.stdin.write(frame.tobytes())
                     self.err_cnt = 0
+
         except Exception:
             traceback.print_exc()
         finally:
             self.terminate_video_stream()
 
     def stop_video_stream(self):
+        logger.info('Stopping video streaming')
         self.stream_stop_event.set()
 
     def terminate_video_stream(self):
