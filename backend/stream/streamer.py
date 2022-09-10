@@ -12,9 +12,13 @@ logger = logging.getLogger('main_logger')
 
 
 class Streamer(Process):
-    def __init__(self, youtube_api_key, source_url, dest_url):
+    def __init__(self, source_url, dest_url, youtube_api_key=''):
         Process.__init__(self)
-        self.set_youtube_api_key(youtube_api_key)
+        if youtube_api_key:
+            self.set_youtube_api_key(youtube_api_key)
+        else:
+            if self.is_youtube_url(source_url):
+                raise Exception('youtube_api_key not exist with youtube source url.')
         self.stream_stop_event = Event()
         self.source_url = source_url
         self.dest_url = dest_url
@@ -22,6 +26,9 @@ class Streamer(Process):
 
     def set_youtube_api_key(self, api_key):
         pafy.set_api_key(api_key)
+
+    def is_youtube_url(self, url):
+        return re.match('^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$', url)
 
     def start_streaming(self, dest_url, width, height):
         command = ['ffmpeg',
@@ -72,7 +79,7 @@ class Streamer(Process):
 
     def convert_source_url_to_opencv_url(self, source_url):
         # youtube url
-        if re.match('^((?:https?:)?\/\/)?((?:www|m)\.)?((?:youtube(-nocookie)?\.com|youtu.be))(\/(?:[\w\-]+\?v=|embed\/|v\/)?)([\w\-]+)(\S+)?$', source_url):
+        if self.is_youtube_url(source_url):
             logger.info('source: youtube url')
             video = pafy.new(source_url)
             if video.duration != '00:00:00':
