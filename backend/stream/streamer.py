@@ -94,8 +94,9 @@ class Streamer(Process):
                 ret, frame = self.cap.read()
                 if not ret:
                     self.err_cnt += 1
-                    logger.warning(f'Frame is empty. {self.err_cnt}', end='\r')
-                    if self.err_cnt > self.max_err_cnt:
+                    if self.err_cnt % 100 == 0:
+                        logger.warning(f'Frame is empty. {self.err_cnt}')
+                    if self.err_cnt > self.max_err_cnt:  # set up new VideoCapture
                         self.cap.release()
                         self.cap = cv2.VideoCapture(self.opencv_url)
                         logger.warning('set up new VideoCapture for refresh TCP connection.')
