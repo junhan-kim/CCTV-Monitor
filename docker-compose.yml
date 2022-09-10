@@ -13,6 +13,8 @@ services:
     ports:
       - "8989:8989"
     # command: gunicorn -w 2 -b :5000 wsgi:server
+    volumes:
+      - "./backend/logs:/backend/logs"
 
   media_server:
     container_name: media_server
