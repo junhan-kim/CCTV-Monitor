@@ -14,15 +14,23 @@ logger = logging.getLogger('main_logger')
 class Streamer(Process):
     def __init__(self, source_url, dest_url, youtube_api_key=''):
         Process.__init__(self)
+
+        # check youtube api key
         if youtube_api_key:
             self.set_youtube_api_key(youtube_api_key)
         else:
             if self.is_youtube_url(source_url):
                 raise Exception('youtube_api_key not exist with youtube source url.')
-        self.stream_stop_event = Event()
+
+        # params
         self.source_url = source_url
         self.dest_url = dest_url
         self.opencv_url = self.convert_source_url_to_opencv_url(source_url)
+
+        # error handling
+        self.stream_stop_event = Event()
+        self.err_cnt = 0
+        self.max_err_cnt = 1000
 
         # init stream process
         self.cap = cv2.VideoCapture(self.opencv_url)
@@ -79,9 +87,16 @@ class Streamer(Process):
             while not self.stream_stop_event.is_set():
                 ret, frame = self.cap.read()
                 if not ret:
-                    logger.warning('Frame is empty.')
+                    self.err_cnt += 1
+                    logger.warning(f'Frame is empty. {self.err_cnt}', end='\r')
+                    if self.err_cnt > self.max_err_cnt:
+                        self.cap.release()
+                        self.cap = cv2.VideoCapture(self.opencv_url)
+                        logger.warning('set up new VideoCapture for refresh TCP connection.')
+                        self.err_cnt = 0
                 else:
                     self.streaming_process.stdin.write(frame.tobytes())
+                    self.err_cnt = 0
         except Exception:
             traceback.print_exc()
         finally:
