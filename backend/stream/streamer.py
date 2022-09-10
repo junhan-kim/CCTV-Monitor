@@ -3,6 +3,7 @@ import subprocess
 import traceback
 from multiprocessing import Process, Event
 import re
+import time
 
 import cv2
 import pafy
@@ -35,12 +36,14 @@ class Streamer(Process):
         self.max_err_cnt = 1000
 
         # init stream process
-        self.cap = cv2.VideoCapture(self.opencv_url)
-        width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-        height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        logger.info(f'width x height: {width} x {height}')
+        cap = cv2.VideoCapture(self.opencv_url)
+        width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        self.fps = int(cap.get(cv2.CAP_PROP_FPS))
+        logger.info(f'width x height: {width} x {height} / fps: {self.fps}')
+
         self.streaming_process = self.init_stream_process(self.dest_url, width, height)
-        self.cap.release()
+        cap.release()
         logger.info('start stream process')
 
     def set_youtube_api_key(self, api_key):
@@ -105,6 +108,7 @@ class Streamer(Process):
                 else:
                     self.streaming_process.stdin.write(frame.tobytes())
                     self.err_cnt = 0
+                time.sleep(1 / self.fps)
 
         except Exception:
             traceback.print_exc()
