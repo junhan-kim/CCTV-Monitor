@@ -1,4 +1,8 @@
 import logging
+import os
+
+
+LOG_DIR = '/backend/logs'
 
 
 def set_default_logger(logger_name):
@@ -12,7 +16,9 @@ def set_default_logger(logger_name):
     logger.addHandler(stream_handler)
 
     # add file handler
-    file_handler = logging.FileHandler('log/main_logger.log')
+    log_path = os.path.join(LOG_DIR, f'{logger_name}.log')
+    os.makedirs(os.path.dirname(log_path), exist_ok=True)
+    file_handler = logging.FileHandler(log_path, mode='a')
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
 
