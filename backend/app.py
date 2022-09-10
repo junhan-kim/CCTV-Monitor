@@ -22,7 +22,7 @@ app = Flask(__name__)
 CORS(app)
 
 # init redis
-rd = redis.StrictRedis(host='localhost', port=6379, db=0)
+rd = redis.Redis(host='redis', port=6379, db=0)
 
 # set default params
 dest_url = "rtmp://media_server/live"  # rtmp + application name
@@ -49,6 +49,8 @@ def start_stream():
         streamer.start()
         time.sleep(20)  # index.m3u8 생기는데까지 걸리는 지연시간 부여
         streamers[channel_name] = streamer
+
+        # rd.hset('streamers', source_url, channel_name)
 
     except Exception:
         logger.error('Error start stream from server.')
