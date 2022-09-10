@@ -33,7 +33,7 @@ class Streamer(Process):
         # error handling
         self.stream_stop_event = Event()
         self.err_cnt = 0
-        self.max_err_cnt = 1000
+        self.max_err_cnt = 300
 
         # init stream process
         cap = cv2.VideoCapture(self.opencv_url)
