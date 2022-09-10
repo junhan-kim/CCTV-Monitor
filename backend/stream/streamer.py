@@ -36,9 +36,10 @@ class Streamer(Process):
 
         # init stream process
         self.cap = cv2.VideoCapture(self.opencv_url)
-        self.width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-        self.height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        self.streaming_process = self.init_stream_process(self.dest_url, self.width, self.height)
+        width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        logger.info(f'width x height: {width} x {height}')
+        self.streaming_process = self.init_stream_process(self.dest_url, width, height)
         self.cap.release()
         logger.info('start stream process')
 
