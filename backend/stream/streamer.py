@@ -111,7 +111,7 @@ class Streamer(Process):
                     if self.err_cnt > self.max_err_cnt:  # set up new VideoCapture
                         self.cap.release()
                         self.cap = cv2.VideoCapture(self.opencv_url)
-                        logger.warning('set up new VideoCapture for refresh TCP connection.')
+                        logger.warning('set up new VideoCapture to refresh TCP connection.')
                         self.err_cnt = 0
                 else:
                     self.streaming_process.stdin.write(frame.tobytes())
