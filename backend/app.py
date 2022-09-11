@@ -23,7 +23,7 @@ app = Flask(__name__)
 CORS(app)
 
 # init redis
-rd = redis.Redis(host='redis', port=6379, db=0)  # db=0 => for streamers
+rd = redis.Redis(host='redis', port=6379, db=0, charset="utf-8", decode_responses=True)  # db=0 => for streamers
 
 # set default params
 dest_url = "rtmp://media_server/live"  # rtmp + application name
@@ -52,7 +52,7 @@ def start_stream():
             streamer.start()
             time.sleep(20)  # index.m3u8 생기는데까지 걸리는 지연시간 부여
             rd.set(source_url, channel_name)
-        channel_name = rd.get(source_url)
+        channel_name = str(rd.get(source_url))
         logger.info(f'source_url: {source_url} -> channel_name: {channel_name}')
 
         streamers[channel_name] = streamer

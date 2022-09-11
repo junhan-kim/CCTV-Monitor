@@ -45,7 +45,10 @@
           body: JSON.stringify({
             sourceUrl: sourceUrl
           }
-      )}).then((res) => {
+      )}).then(
+        res => res.json()
+      ).then((res) => {
+        console.debug(res)
         let streamUrl = `${media_server_url}/hls/${res.channelName}/index.m3u8`
         console.log(`Success to connect stream from ${streamUrl}`)
         startStream(streamUrl)
