@@ -52,10 +52,10 @@ def start_stream():
             streamer.start()
             time.sleep(20)  # index.m3u8 생기는데까지 걸리는 지연시간 부여
             rd.set(source_url, channel_name)
+            streamers[channel_name] = streamer
+
         channel_name = str(rd.get(source_url))
         logger.info(f'source_url: {source_url} -> channel_name: {channel_name}')
-
-        streamers[channel_name] = streamer
 
     except Exception:
         logger.error('Error start stream from server.')
