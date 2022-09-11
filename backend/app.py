@@ -44,7 +44,7 @@ def start_stream():
 
     # set streamer
     try:
-        if not rd.exists(source_url):
+        if not rd.exists(source_url):  # 해당 URL에 대한 Streamer가 없다면 생성
             channel_name = generate_id_by_uuid()
             logger.info(f'source_url key not exist in redis. start stream with {channel_name}')
             streamer = Streamer(source_url=source_url, dest_url=f'{dest_url}/{channel_name}',
@@ -54,7 +54,7 @@ def start_stream():
             rd.set(source_url, channel_name)
             streamers[channel_name] = streamer
 
-        channel_name = str(rd.get(source_url))
+        channel_name = str(rd.get(source_url))  # 해당 URL에 대한 채널명으로 응답
         logger.info(f'source_url: {source_url} -> channel_name: {channel_name}')
 
     except Exception:
@@ -67,6 +67,7 @@ def start_stream():
     }), 200)
 
 
+# 사용자한테 노출되면 안되는 Endpoint (사용자가 직접 채널 이름을 통해 stream을 종료해선 안됨.)
 @app.route('/stream/stop', methods=['POST'])
 def stop_stream():
     # get_params
