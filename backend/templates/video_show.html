@@ -6,10 +6,8 @@
   <div>
     <div>
       <form>
-        Channel Name : <input id='channelName' type='text'/><br>
-        Youtube URL : <input id='sourceUrl' type='text'/><br>
+        Source URL : <input id='sourceUrl' type='text'/><br>
         <input type='button' onclick="onClickStreamConnect()", value='스트림 연결'>
-        <input type='button' onclick="onClickStreamDisconnect()", value='스트림 종료'>
       </form>
     </div>
     <div id="player-wrapper"></div>  <!-- The element where the player will be placed -->
@@ -29,20 +27,14 @@
 
 
     function startStream(streamUrl) {
-      player.style.visibility="visible"
       setupEyevinnPlayer('player-wrapper', streamUrl).then(function(player) {
         let muteOnStart = true;
         player.play(muteOnStart);
       });
     }
 
-    function stopStream() {
-      player.style.visibility="hidden"
-    }
-
     function onClickStreamConnect() {
       console.log('Stream Connect.')
-      let channelName = document.getElementById('channelName').value
       let sourceUrl = document.getElementById('sourceUrl').value
 
       fetch(`${server_url}/stream/start`, {
@@ -51,42 +43,15 @@
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            channelName: channelName,
             sourceUrl: sourceUrl
           }
       )}).then((res) => {
-        console.log(res.status)
-        if (res.status == 200) {
-          let streamUrl = `${media_server_url}/hls/${channelName}/index.m3u8`
-          console.log(`Success to connect stream from ${streamUrl}`)
-          startStream(streamUrl)
-        }
-        else {
-          console.log('Error stream connection.')
-        }
-      });
-    }
-
-    function onClickStreamDisconnect() {
-      console.log('Stream Disconnect.')
-      let channelName = document.getElementById('channelName').value
-
-      fetch(`${server_url}/stream/stop`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          channelName: channelName
-        }
-      )}).then(res => {
-        console.log(res.status)
-        if (res.status == 200) {
-          console.log(`Success to disconnect stream from ${channelName}`)
-        }
-        else {
-          console.log('Error stop stream.')
-        }
+        let streamUrl = `${media_server_url}/hls/${res.channelName}/index.m3u8`
+        console.log(`Success to connect stream from ${streamUrl}`)
+        startStream(streamUrl)
+      }).catch((err) => {
+        console.error('Error stream connection.')
+        console.error(err.stack)
       })
     }
 
