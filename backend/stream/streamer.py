@@ -100,13 +100,27 @@ class Streamer(Process):
         try:
             logger.info('Starting video stream')
             self.cap = cv2.VideoCapture(self.opencv_url)  # since opencv restriction of sharing variable with __init__
+            width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+            height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
             while not self.stream_stop_event.is_set():
                 ret, frame = self.cap.read()
-                if not ret:
+
+                # error check
+                frame_is_empty = not ret
+
+                frame_shape_mismatch = False
+                if tuple(frame.shape[:2]) != (height, width):
+                    logger.warning('frame shape mismatch error.')
+                    logger.warning(
+                        f'current frame shape: {tuple(frame.shape[:2])}, expected frame shape: {(height, width)}')
+                    frame_shape_mismatch = True
+                #####
+
+                if frame_is_empty or frame_shape_mismatch:
                     self.err_cnt += 1
                     if self.err_cnt % 100 == 0:
-                        logger.warning(f'Frame is empty. {self.err_cnt}')
+                        logger.warning(f'Frame Error. {self.err_cnt}')
                     if self.err_cnt > self.max_err_cnt:  # set up new VideoCapture
                         self.cap.release()
                         self.cap = cv2.VideoCapture(self.opencv_url)
