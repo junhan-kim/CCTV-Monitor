@@ -107,10 +107,10 @@ class Streamer(Process):
                 ret, frame = self.cap.read()
 
                 # error check
-                frame_is_empty = not ret
+                frame_is_empty = (not ret) or (frame is None)
 
                 frame_shape_mismatch = False
-                if tuple(frame.shape[:2]) != (height, width):
+                if frame is not None and tuple(frame.shape[:2]) != (height, width):
                     logger.warning('frame shape mismatch error.')
                     logger.warning(
                         f'current frame shape: {tuple(frame.shape[:2])}, expected frame shape: {(height, width)}')
