@@ -1,4 +1,4 @@
-FROM alpine:latest
+FROM python:3.10.5-alpine
 
 LABEL maintainer="NGINX-MEDIA_SERVER maintainer <kjune1236@gmail.com>"
 
@@ -49,6 +49,8 @@ RUN cd nginx-${NGINX_VERSION} && \
 # RUN ln -sf /dev/stdout /var/log/nginx/access.log && \
 #     ln -sf /dev/stderr /var/log/nginx/error.log
 
+RUN ln -s /usr/bin/python3 /usr/bin/python
+RUN ln -s /usr/bin/pip3 /usr/bin/pip
 
 # copy local nginx.conf to docker
 COPY ./nginx.conf /etc/nginx/nginx.conf
