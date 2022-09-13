@@ -1,12 +1,23 @@
 import subprocess
+import re
 
 
 # params
 access_log_path = './logs/access.log'
 #####
 
+# tail -f 로 파일에 대한 실시간 로그를 출력하는 프로세스를 올리고, 해당 프로세스의 stdout을 계속해서 읽음
 proc = subprocess.Popen(['tail', '-F', access_log_path],
                         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+line_id = 0
 while True:
-    line = proc.stdout.readline()
-    print(line)
+    line = proc.stdout.readline()  # get stdout bytes
+    string = line.decode('utf-8').strip()  # decoding to utf-8
+
+    # regex for channel name and requested time
+    match = re.search(r'\[([0-9]{1,2}/[a-zA-Z]{3}/[0-9]{4}:[0-9]{2}:[0-9]{2}:[0-9]{2}).*/hls/([0-9a-z-]*)/', string)
+    requested_date = match.group(1)
+    channel_name = match.group(2)
+    print(f'[{line_id}] requested_date: {requested_date} / channel_name: {channel_name}')
+
+    line_id += 1
