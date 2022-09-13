@@ -1,5 +1,6 @@
 import subprocess
 import re
+import datetime
 
 
 # params
@@ -16,8 +17,11 @@ while True:
 
     # regex for channel name and requested time
     match = re.search(r'\[([0-9]{1,2}/[a-zA-Z]{3}/[0-9]{4}:[0-9]{2}:[0-9]{2}:[0-9]{2}).*/hls/([0-9a-z-]*)/', string)
-    requested_date = match.group(1)
+    requested_date_str = match.group(1)
     channel_name = match.group(2)
+
+    # convert date string to date object
+    requested_date = datetime.datetime.strptime(requested_date_str, '%d/%b/%Y:%H:%M:%S')  # %b : abbreviated month
     print(f'[{line_id}] requested_date: {requested_date} / channel_name: {channel_name}')
 
     line_id += 1
