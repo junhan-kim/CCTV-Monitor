@@ -3,7 +3,7 @@ import os
 from logging.handlers import RotatingFileHandler
 
 
-LOG_DIR = '/backend/logs'
+LOG_DIR = '/logs'
 
 
 def set_default_logger(logger_name):
