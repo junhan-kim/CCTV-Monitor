@@ -28,7 +28,6 @@ services:
     volumes:
       - "./media_server/logs:/var/log/nginx"
       - "./media_server/logs:/logs"
-    command: nginx && python /stream_manager.py
 
   redis:
     image: redis:alpine

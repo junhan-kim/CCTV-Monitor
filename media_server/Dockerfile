@@ -68,4 +68,6 @@ COPY ./stream_manager.py /stream_manager.py
 # export 1935 for rtmp, 8080 for hls or dash
 EXPOSE 1935 8080
 
+COPY ./run.sh .
 # CMD ["nginx", "-g", "daemon off;"]
+CMD ["sh", "run.sh"]

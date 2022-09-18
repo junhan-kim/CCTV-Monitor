@@ -11,7 +11,7 @@ import requests
 
 from logger import set_default_logger
 
-logger = set_default_logger('main_logger')
+logger = set_default_logger('stream_manager')
 rd = redis.Redis(host='redis', port=6379, db=0, charset="utf-8", decode_responses=True)
 
 

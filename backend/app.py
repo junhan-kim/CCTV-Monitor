@@ -93,8 +93,8 @@ def stop_stream():
         streamers.pop(channel_name)
         del channel_names.inverse[channel_name]  # delete by value with bidict
 
-        logger.info(f'streamers: {streamers}')
-        logger.info(f'channel_names: {channel_names}')
+        # logger.info(f'streamers: {streamers}')
+        # logger.info(f'channel_names: {channel_names}')
 
     except Exception:
         logger.error('Error stop stream from server.')
