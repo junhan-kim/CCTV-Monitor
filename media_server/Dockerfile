@@ -60,14 +60,12 @@ ENV TZ=Asia/Seoul
 COPY ./nginx.conf /etc/nginx/nginx.conf
 
 COPY ./requirements.txt .
-# RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
 COPY ./logger.py .
 COPY ./stream_manager.py /stream_manager.py
-RUN python /stream_manager.py
 
 # export 1935 for rtmp, 8080 for hls or dash
 EXPOSE 1935 8080
 
-CMD ["nginx", "-g", "daemon off;"]
+# CMD ["nginx", "-g", "daemon off;"]
