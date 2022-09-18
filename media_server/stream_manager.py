@@ -1,18 +1,18 @@
-import subprocess
-import re
 import datetime
-import traceback
 import os
-from threading import Thread
+import re
+import subprocess
 import time
-import requests
+import traceback
+from threading import Thread
+
 import redis
+import requests
 
 from logger import set_default_logger
 
-
 logger = set_default_logger('main_logger')
-rd = redis.Redis(host='localhost', port=6379, db=0, charset="utf-8", decode_responses=True)
+rd = redis.Redis(host='redis', port=6379, db=0, charset="utf-8", decode_responses=True)
 
 
 # 채널 명, 요청 시간 등의 정보를 받아옴
@@ -54,12 +54,13 @@ def get_all_channel_names():
 
 
 def stop_channel(channel_name):
-    url = f'http://localhost:8989/stream/stop'
+    url = f'http://backend:8989/stream/stop'
     res = requests.post(url, json={
         "channelName": channel_name
     })
     if res.status_code == 200:
         logger.info(f'stop channel => {channel_name}')
+        rd.hdel('last_requested_times', channel_name)
     else:
         logger.warning(f'failed to stop channel => {channel_name}')
 
@@ -67,22 +68,28 @@ def stop_channel(channel_name):
 class Cleaner(Thread):
     def __init__(self):
         Thread.__init__(self)
-        self.execution_interval = 10
-        self.expiry_time_delta = datetime.timedelta(minutes=30, seconds=0)
+        self.initial_interval = 30
+        self.execution_interval = 10  # seconds
+        self.expiry_time_delta = datetime.timedelta(minutes=0, seconds=30)
 
     def run(self):
+        time.sleep(self.initial_interval)
+
         while True:
             logger.info('start clean up channels')
             current_date = datetime.datetime.now()
             channel_names = get_all_channel_names()
 
             for channel_name in channel_names:
-                last_requested_date = datetime.datetime.strptime(
-                    rd.hget('last_requested_times', channel_name), '%d/%b/%Y:%H:%M:%S')  # %b : abbreviated month
+                last_requested_date_str = rd.hget('last_requested_times', channel_name)
 
-                if not last_requested_date:
+                if not last_requested_date_str:
                     logger.info(f'[{channel_name}] last_requested_date not exist')
                     stop_channel(channel_name)
+                    continue
+
+                last_requested_date = datetime.datetime.strptime(
+                    last_requested_date_str, '%d/%b/%Y:%H:%M:%S')  # %b : abbreviated month
 
                 if current_date > last_requested_date + self.expiry_time_delta:
                     logger.info(
@@ -97,14 +104,14 @@ if __name__ == '__main__':
     cleaner.daemon = True  # kill this thread when main thread is killed
     cleaner.start()
 
-    access_log_path = './logs/access.log'
+    access_log_path = '/var/log/nginx/access.log'
     log_output_generator = LogOutputGenerator(access_log_path)
     line_id = 0
 
     for log_info in log_output_generator:
         requested_date = log_info['requested_date']
         channel_name = log_info['channel_name']
-        logger.info(f'[{line_id}] requested_date: {requested_date} / channel_name: {channel_name}')
+        logger.info(f'[{line_id}] channel_name: {channel_name} / requested_date: {requested_date}')
 
         # refresh last requested time
         rd.hset('last_requested_times', channel_name, requested_date)  # key: channel_name / value: last requested time

@@ -130,3 +130,5 @@ dmypy.json
 
 
 backend/config.ini
+backend/logs
+media_server/logs

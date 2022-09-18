@@ -19,7 +19,7 @@ def set_default_logger(logger_name):
     # add file handler
     log_path = os.path.join(LOG_DIR, f'{logger_name}.log')
     os.makedirs(os.path.dirname(log_path), exist_ok=True)
-    file_handler = RotatingFileHandler(log_path, mode='a', maxBytes=65536, backupCount=5)
+    file_handler = RotatingFileHandler(log_path, mode='a', maxBytes=100000000, backupCount=5)
     file_handler.setFormatter(formatter)
     logger.addHandler(file_handler)
 

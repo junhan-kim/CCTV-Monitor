@@ -27,7 +27,7 @@ services:
       - proxynet
     volumes:
       - "./media_server/logs:/var/log/nginx"
-      - "./media_server/logs/stream_manager.log:/logs/stream_manager.log"
+      - "./media_server/logs:/logs"
 
   redis:
     image: redis:alpine
