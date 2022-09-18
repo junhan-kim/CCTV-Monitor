@@ -2,8 +2,13 @@ import subprocess
 import re
 import datetime
 import traceback
+import os
+from threading import Thread
+import time
+import requests
 
 
+# 채널 명, 요청 시간 등의 정보를 받아옴
 def LogOutputGenerator(log_path):
     # tail -f 로 파일에 대한 실시간 로그를 출력하는 프로세스를 올리고, 해당 프로세스의 stdout을 계속해서 읽음
     proc = subprocess.Popen(['tail', '-F', log_path],
@@ -18,12 +23,16 @@ def LogOutputGenerator(log_path):
             match = re.search(
                 r'\[([0-9]{1,2}/[a-zA-Z]{3}/[0-9]{4}:[0-9]{2}:[0-9]{2}:[0-9]{2}).*/hls/([0-9a-z-]*)/', string)
 
-            requested_date_str = match.group(1)
-            # convert date string to date object
-            requested_date = datetime.datetime.strptime(
-                requested_date_str, '%d/%b/%Y:%H:%M:%S')  # %b : abbreviated month
+            try:
+                requested_date_str = match.group(1)
+                # convert date string to date object
+                requested_date = datetime.datetime.strptime(
+                    requested_date_str, '%d/%b/%Y:%H:%M:%S')  # %b : abbreviated month
 
-            channel_name = match.group(2)
+                channel_name = match.group(2)
+            except Exception:
+                print(f'match failed in string => {string}')
+                continue
 
             yield {
                 'requested_date': requested_date,
@@ -36,7 +45,35 @@ def LogOutputGenerator(log_path):
         proc.terminate()
 
 
-# params
+def get_all_channel_names():
+    dir_name = '/mnt/hls'
+    return os.listdir(dir_name)
+
+
+def clean_channel(channel_name):
+    url = f'http://localhost:8989/stream/stop'
+    res = requests.post(url, json={
+        "channelName": channel_name
+    })
+    print(res)
+
+
+def clean_channels():
+    pass
+    # class Cleaner(Thread):
+    #     def __init__(self, interval_seconds=60):
+    #         Thread.__init__(self)
+    #         self.interval_seconds = interval_seconds
+    #         self.
+
+    #     def run(self):
+    #         while True:
+
+    #             time.sleep(self.interval_seconds)
+
+    # params
+
+
 access_log_path = './logs/access.log'
 #####
 
@@ -53,6 +90,9 @@ for log_info in log_output_generator:
     last_requested_times[channel_name] = requested_date
     print(last_requested_times)
 
-    # get
+    # get channel_names
+    # channel_names = get_all_channel_names()
+
+    clean_channel(channel_name)
 
     line_id += 1

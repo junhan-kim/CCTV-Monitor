@@ -82,7 +82,12 @@ def stop_stream():
 
     # stop streamer
     try:
-        streamer = streamers[channel_name]
+        try:
+            streamer = streamers[channel_name]
+        except KeyError:
+            logger.warning('channel name not found')
+            return make_response("Channel not found", 404)
+
         streamer.stop_video_stream()
         streamer.join()
         streamers.pop(channel_name)
