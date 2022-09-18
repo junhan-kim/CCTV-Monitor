@@ -70,7 +70,7 @@ class Cleaner(Thread):
         Thread.__init__(self)
         self.initial_interval = 30
         self.execution_interval = 60  # seconds
-        self.expiry_time_delta = datetime.timedelta(minutes=0, seconds=30)
+        self.expiry_time_delta = datetime.timedelta(minutes=1, seconds=0)
 
     def run(self):
         time.sleep(self.initial_interval)
