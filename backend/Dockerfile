@@ -7,6 +7,10 @@ RUN ln -s /usr/bin/pip3 /usr/bin/pip
 
 RUN apt-get install -y ffmpeg
 
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Asia/Seoul
+RUN apt-get install -y tzdata
+
 WORKDIR /backend
 COPY ./requirements.txt .
 RUN pip install --upgrade pip
