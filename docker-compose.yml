@@ -15,6 +15,8 @@ services:
     # command: gunicorn -w 2 -b :5000 wsgi:server
     volumes:
       - "./backend/logs:/backend/logs"
+    depends_on:
+      - redis
 
   media_server:
     container_name: media_server
@@ -28,6 +30,8 @@ services:
     volumes:
       - "./media_server/logs:/var/log/nginx"
       - "./media_server/logs:/logs"
+    depends_on:
+      - redis
 
   redis:
     image: redis:alpine
