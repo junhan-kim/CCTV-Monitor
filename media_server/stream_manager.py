@@ -69,7 +69,7 @@ class Cleaner(Thread):
     def __init__(self):
         Thread.__init__(self)
         self.initial_interval = 30
-        self.execution_interval = 10  # seconds
+        self.execution_interval = 60  # seconds
         self.expiry_time_delta = datetime.timedelta(minutes=0, seconds=30)
 
     def run(self):
