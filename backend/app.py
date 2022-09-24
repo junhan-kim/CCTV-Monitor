@@ -30,6 +30,7 @@ rd = redis.Redis(host='redis', port=6379, db=0, charset="utf-8", decode_response
 dest_url = "rtmp://media_server/live"  # rtmp + application name
 streamers = {}  # key: channel_name, value: streamer process
 channel_names = bidict.bidict({})  # key: source_url, value: channel_name
+channel_status = {}  # key: channel_name, value: status ['creating' | 'running' | 'stopped']
 
 
 @app.route('/', methods=['GET'])
@@ -48,28 +49,41 @@ def start_stream():
     try:
         if source_url not in channel_names:  # 해당 URL에 대한 Streamer가 없다면 생성
             channel_name = generate_id_by_uuid()
+            channel_names[source_url] = channel_name
+            channel_status[channel_name] = 'creating'
             logger.info(f'source_url key not exist. start stream with {channel_name}')
+
             streamer = Streamer(source_url=source_url, dest_url=f'{dest_url}/{channel_name}',
                                 youtube_api_key=youtube_api_key)
             streamer.start()
             time.sleep(20)  # index.m3u8 생기는데까지 걸리는 지연시간 부여
-            channel_names[source_url] = channel_name
+
             streamers[channel_name] = streamer
+            channel_status[channel_name] = 'running'
 
         channel_name = str(channel_names[source_url])  # 해당 URL에 대한 채널명으로 응답
         logger.info(f'source_url: {source_url} -> channel_name: {channel_name}')
 
-        logger.info(f'streamers: {streamers}')
-        logger.info(f'channel_names: {channel_names}')
+        if channel_status[channel_name] == 'creating':
+            timeout = 40
+            start_time = time.time()
+            while channel_status[channel_name] != 'running':
+                if time.time() - start_time > timeout:
+                    logger.error(f'failed to running channel => {channel_name}')
+                    raise Exception(f'failed to running channel => {channel_name}')
+                logger.info(f'waiting for running channel => {channel_name}')
+                time.sleep(3)
+            logger.info(f'end waiting for running channel => {channel_name}')
+
+        return make_response(jsonify({
+            'msg': 'Success start stream.',
+            'channelName': channel_name
+        }), 200)
 
     except Exception:
         logger.error('Error start stream from server.')
         traceback.print_exc()
         return make_response('Error start stream from server.', 500)
-    return make_response(jsonify({
-        'msg': 'Success start stream.',
-        'channelName': channel_name
-    }), 200)
 
 
 # 사용자한테 노출되면 안되는 Endpoint (사용자가 직접 채널 이름을 통해 stream을 종료해선 안됨.)
@@ -90,17 +104,16 @@ def stop_stream():
 
         streamer.stop_video_stream()
         streamer.join()
+        channel_status[channel_name] = 'stopped'
         streamers.pop(channel_name)
         del channel_names.inverse[channel_name]  # delete by value with bidict
 
-        # logger.info(f'streamers: {streamers}')
-        # logger.info(f'channel_names: {channel_names}')
+        return make_response("Success stop stream", 200)
 
     except Exception:
         logger.error('Error stop stream from server.')
         traceback.print_exc()
         return make_response("Error stop stream", 500)
-    return make_response("Success stop stream", 200)
 
 
 @app.route('/streamers', methods=['GET'])
