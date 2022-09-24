@@ -33,6 +33,18 @@ services:
     depends_on:
       - redis
 
+  frontend:
+    container_name: frontend
+    build: ./frontend
+    volumes:
+      - "./frontend/node_modules:/node_modules"
+    ports:
+      - "3201:3000"
+    environment:
+      - NODE_ENV=development
+    networks:
+      - proxynet
+
   redis:
     image: redis:alpine
     command: redis-server --port 6379
