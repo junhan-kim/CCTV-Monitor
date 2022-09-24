@@ -68,10 +68,11 @@ def start_stream():
             timeout = 40
             start_time = time.time()
             while channel_status[channel_name] != 'running':
-                if time.time() - start_time > timeout:
+                delay = time.time() - start_time
+                if delay > timeout:
                     logger.error(f'failed to running channel => {channel_name}')
                     raise Exception(f'failed to running channel => {channel_name}')
-                logger.info(f'waiting for running channel => {channel_name}')
+                logger.info(f'waiting for running channel => {channel_name}. delay: {round(delay, 3)} sec')
                 time.sleep(3)
             logger.info(f'end waiting for running channel => {channel_name}')
 
