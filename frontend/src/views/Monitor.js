@@ -7,16 +7,18 @@ class Monitor extends React.Component {
   state = {
     streamers: [],
   };
+  streamUrlRef = React.createRef();
 
-  addPlayer = (streamUrl) => {
+  addPlayer = () => {
     this.setState((state) => {
-      return { streamers: [...state.streamers, { id: uuidv1(), streamUrl: streamUrl }] };
+      return { streamers: [...state.streamers, { id: uuidv1(), streamUrl: this.streamUrlRef.current.value }] };
     });
   };
 
   render() {
     return (
       <div>
+        <input type="text" ref={this.streamUrlRef}></input>
         <button onClick={this.addPlayer}>add</button>
         <div id="Monitor">
           {this.state.streamers.map(({ id, streamUrl }) => (

@@ -11,7 +11,7 @@ class Player extends React.Component {
   connectStream(sourceStreamUrl) {
     console.log("Stream Connect.");
 
-    fetch(`${this.props.server_url}/stream/start`, {
+    fetch(`${this.props.serverUrl}/stream/start`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
