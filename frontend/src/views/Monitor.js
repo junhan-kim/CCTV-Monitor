@@ -9,9 +9,31 @@ class Monitor extends React.Component {
   };
   streamUrlRef = React.createRef();
 
+  async connectStream(sourceStreamUrl) {
+    console.log("Stream Connect.");
+
+    const res = await fetch(`${this.props.serverUrl}/stream/start`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        sourceUrl: sourceStreamUrl,
+      }),
+    });
+    const data = await res.json();
+    let streamUrl = `${this.mediaServerUrl}/hls/${data.channelName}/index.m3u8`;
+    console.log(`Success to connect stream from ${streamUrl}`);
+    return streamUrl;
+  }
+
   addPlayer = () => {
+    let srcStreamUrl = this.streamUrlRef.current.value;
+    console.log(`stream connecting => ${srcStreamUrl}`);
+    let streamUrl = this.connectStream(srcStreamUrl);
+    console.log(`stream is connected => ${streamUrl}`);
     this.setState((state) => {
-      return { streamers: [...state.streamers, { id: uuidv1(), streamUrl: this.streamUrlRef.current.value }] };
+      return { streamers: [...state.streamers, { id: uuidv1(), streamUrl: streamUrl }] };
     });
   };
 
@@ -22,7 +44,7 @@ class Monitor extends React.Component {
         <button onClick={this.addPlayer}>add</button>
         <div id="Monitor">
           {this.state.streamers.map(({ id, streamUrl }) => (
-            <Player key={id} streamUrl={streamUrl} serverUrl={this.props.serverUrl} mediaServerUrl={this.mediaServerUrl}></Player>
+            <Player key={id} streamUrl={streamUrl}></Player>
           ))}
         </div>
       </div>

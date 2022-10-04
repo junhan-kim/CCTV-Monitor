@@ -8,36 +8,14 @@ class Player extends React.Component {
     });
   }
 
-  connectStream(sourceStreamUrl) {
-    console.log("Stream Connect.");
-
-    fetch(`${this.props.serverUrl}/stream/start`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        sourceUrl: sourceStreamUrl,
-      }),
-    })
-      .then((res) => res.json())
-      .then((res) => {
-        console.debug(res);
-        let streamUrl = `${this.props.mediaServerUrl}/hls/${res.channelName}/index.m3u8`;
-        console.log(`Success to connect stream from ${streamUrl}`);
-        this.playStream(streamUrl);
-      })
-      .catch((err) => {
-        console.error("Error stream connection.");
-        console.error(err.stack);
-      });
+  componentDidMount() {
+    this.playStream(this.props.streamUrl);
   }
 
   render() {
     return (
       <div className="Player">
         <div id="player-wrapper"></div>
-        {this.connectStream(this.props.streamUrl)}
       </div>
     );
   }
