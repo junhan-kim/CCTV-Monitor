@@ -9,31 +9,11 @@ class Monitor extends React.Component {
   };
   streamUrlRef = React.createRef();
 
-  async connectStream(sourceStreamUrl) {
-    console.log("Stream Connect.");
-
-    const res = await fetch(`${this.props.serverUrl}/stream/start`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        sourceUrl: sourceStreamUrl,
-      }),
-    });
-    const data = await res.json();
-    let streamUrl = `${this.mediaServerUrl}/hls/${data.channelName}/index.m3u8`;
-    console.log(`Success to connect stream from ${streamUrl}`);
-    return streamUrl;
-  }
-
   addPlayer = () => {
     let srcStreamUrl = this.streamUrlRef.current.value;
-    console.log(`stream connecting => ${srcStreamUrl}`);
-    let streamUrl = this.connectStream(srcStreamUrl);
-    console.log(`stream is connected => ${streamUrl}`);
+    console.log(`add stream => ${srcStreamUrl}`);
     this.setState((state) => {
-      return { streamers: [...state.streamers, { id: uuidv1(), streamUrl: streamUrl }] };
+      return { streamers: [...state.streamers, { id: uuidv1(), streamUrl: srcStreamUrl }] };
     });
   };
 
