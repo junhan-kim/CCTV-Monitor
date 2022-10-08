@@ -3,7 +3,7 @@ import React from "react";
 class Player extends React.Component {
   constructor(props) {
     super(props);
-    console.log("player constructor called");
+    console.log(`player constructor called. key: ${this.props.id}`);
 
     this.serverUrl = "http://localhost:8989";
     this.mediaServerUrl = "http://localhost:8080";
@@ -32,7 +32,7 @@ class Player extends React.Component {
   }
 
   playStream(streamUrl) {
-    setupEyevinnPlayer("player-wrapper", streamUrl).then(function (player) {
+    setupEyevinnPlayer(this.props.id, streamUrl).then(function (player) {
       let muteOnStart = true;
       player.play(muteOnStart);
     });
@@ -41,7 +41,7 @@ class Player extends React.Component {
   render() {
     return (
       <div className="Player">
-        <div id="player-wrapper"></div>
+        <div id={this.props.id}></div>
       </div>
     );
   }

@@ -3,7 +3,6 @@ import Player from "../components/player/Player";
 import { v1 as uuidv1 } from "uuid";
 
 class Monitor extends React.Component {
-  mediaServerUrl = "http://localhost:8080";
   state = {
     streamers: [],
   };
@@ -24,7 +23,7 @@ class Monitor extends React.Component {
         <button onClick={this.addPlayer}>add</button>
         <div id="Monitor">
           {this.state.streamers.map(({ id, streamUrl }) => (
-            <Player key={id} streamUrl={streamUrl}></Player>
+            <Player key={id} id={id} streamUrl={streamUrl}></Player>
           ))}
         </div>
       </div>
