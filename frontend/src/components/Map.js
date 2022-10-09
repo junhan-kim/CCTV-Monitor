@@ -1,7 +1,12 @@
+/* global kakao */
 import React from "react";
 
 class Map extends React.Component {
   mapRef = React.createRef();
+
+  componentDidMount() {
+    this.setMap();
+  }
 
   setMap() {
     let container = this.mapRef.current; //지도를 담을 영역의 DOM 레퍼런스
