@@ -11,6 +11,7 @@ class Map extends React.Component {
   componentDidMount() {
     let map = this.setMap(this.defaultLatitude, this.defaultLongitude, this.defaultLevel);
     this.setCenter(map);
+    let openAPIurl = this.openAPIurl;
 
     kakao.maps.event.addListener(map, "bounds_changed", function () {
       let bounds = map.getBounds();
@@ -20,7 +21,9 @@ class Map extends React.Component {
       let maxLat = bounds.getNorthEast().getLat();
       let maxLng = bounds.getNorthEast().getLng();
       console.log(`minLat: ${minLat}, maxLat: ${maxLat}, minLng: ${minLng}, maxLng: ${maxLng}`);
-      fetch(`${this.openAPIurl}/cctvInfo?apiKey=${process.env.REACT_APP_OPENAPI_ITS_KEY}&type=ex&cctvType=1&minX=${minLng}&maxX=${maxLng}&minY=${minLat}&maxY=${maxLat}&getType=json`)
+      let cctvInfoUrl = `${openAPIurl}/cctvInfo?apiKey=${process.env.REACT_APP_OPENAPI_ITS_KEY}&type=ex&cctvType=1&minX=${minLng}&maxX=${maxLng}&minY=${minLat}&maxY=${maxLat}&getType=json`;
+      console.log(`cctvInfoUrl: ${cctvInfoUrl}`);
+      fetch(cctvInfoUrl)
         .then((res) => {
           res.json();
         })
