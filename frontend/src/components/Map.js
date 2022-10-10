@@ -5,12 +5,32 @@ class Map extends React.Component {
   mapRef = React.createRef();
   defaultLatitude = 33.450701;
   defaultLongitude = 126.570667;
+  defaultLevel = 3;
+  openAPIurl = "https://openapi.its.go.kr:9443";
 
   componentDidMount() {
-    this.getLocation();
+    let map = this.setMap(this.defaultLatitude, this.defaultLongitude, this.defaultLevel);
+    this.setCenter(map);
+
+    kakao.maps.event.addListener(map, "bounds_changed", function () {
+      let bounds = map.getBounds();
+      console.log(`bounds: ${bounds}`);
+      let minLat = bounds.getSouthWest().getLat();
+      let minLng = bounds.getSouthWest().getLng();
+      let maxLat = bounds.getNorthEast().getLat();
+      let maxLng = bounds.getNorthEast().getLng();
+      console.log(`minLat: ${minLat}, maxLat: ${maxLat}, minLng: ${minLng}, maxLng: ${maxLng}`);
+      fetch(`${this.openAPIurl}/cctvInfo?apiKey=${process.env.REACT_APP_OPENAPI_ITS_KEY}&type=ex&cctvType=1&minX=${minLng}&maxX=${maxLng}&minY=${minLat}&maxY=${maxLat}&getType=json`)
+        .then((res) => {
+          res.json();
+        })
+        .then((data) => {
+          console.log(data);
+        });
+    });
   }
 
-  getLocation = () => {
+  setCenter = (map) => {
     if (navigator.geolocation) {
       // GPS를 지원하면
       navigator.geolocation.getCurrentPosition(
@@ -23,11 +43,10 @@ class Map extends React.Component {
           console.log(`longitude 경도 : ${position.coords.longitude}`);
           console.log(`altitude 고도 : ${position.coords.altitude}`);
 
-          this.setMap(position.coords.latitude, position.coords.longitude);
+          map.setCenter(new kakao.maps.LatLng(position.coords.latitude, position.coords.longitude));
         },
         (error) => {
           console.error(error);
-          this.setMap(this.defaultLatitude, this.defaultLongitude);
         },
         {
           enableHighAccuracy: false,
@@ -37,17 +56,16 @@ class Map extends React.Component {
       );
     } else {
       alert("GPS를 지원하지 않습니다");
-      this.setMap(this.defaultLatitude, this.defaultLongitude);
     }
   };
 
-  setMap(latitude, longitude) {
+  setMap(latitude, longitude, level) {
     console.log(`Lat, Lng: ${latitude}, ${longitude}`);
     let container = this.mapRef.current; //지도를 담을 영역의 DOM 레퍼런스
     let options = {
       //지도를 생성할 때 필요한 기본 옵션
       center: new kakao.maps.LatLng(latitude, longitude), //지도의 중심좌표.
-      level: 3, //지도의 레벨(확대, 축소 정도)
+      level: level, //지도의 레벨(확대, 축소 정도)
     };
     let map = new kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
     return map;
