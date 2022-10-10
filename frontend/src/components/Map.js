@@ -16,7 +16,7 @@ class Map extends React.Component {
     this.setCenterWithMyLocation(map);
 
     let openAPIurl = this.openAPIurl;
-    let cctvMarkerImageUrl = "https://www.clipartmax.com/png/middle/58-586592_cctv-camera-icon-cctv-icon.png";
+    let cctvMarkerImageUrl = "https://toppng.com//public/uploads/preview/cctv-camera-icon-cctv-camera-icon-1156329928317vhhunz9l.png";
 
     // 지도 영역 변경시 이벤트 등록
     kakao.maps.event.addListener(map, "bounds_changed", function () {
@@ -35,6 +35,9 @@ class Map extends React.Component {
       fetch(cctvInfoUrl)
         .then((res) => res.json())
         .then((res) => {
+          if (!("data" in res.response)) {
+            return [];
+          }
           let cctvList = res.response.data;
           console.log(cctvList);
           if (typeof cctvList == "undefined") {
