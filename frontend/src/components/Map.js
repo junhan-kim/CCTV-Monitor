@@ -10,30 +10,11 @@ class Map extends React.Component {
 
   componentDidMount() {
     let map = this.setMap(this.defaultLatitude, this.defaultLongitude, this.defaultLevel);
-    this.setCenter(map);
-    let openAPIurl = this.openAPIurl;
-
-    kakao.maps.event.addListener(map, "bounds_changed", function () {
-      let bounds = map.getBounds();
-      console.log(`bounds: ${bounds}`);
-      let minLat = bounds.getSouthWest().getLat();
-      let minLng = bounds.getSouthWest().getLng();
-      let maxLat = bounds.getNorthEast().getLat();
-      let maxLng = bounds.getNorthEast().getLng();
-      console.log(`minLat: ${minLat}, maxLat: ${maxLat}, minLng: ${minLng}, maxLng: ${maxLng}`);
-      let cctvInfoUrl = `${openAPIurl}/cctvInfo?apiKey=${process.env.REACT_APP_OPENAPI_ITS_KEY}&type=ex&cctvType=1&minX=${minLng}&maxX=${maxLng}&minY=${minLat}&maxY=${maxLat}&getType=json`;
-      console.log(`cctvInfoUrl: ${cctvInfoUrl}`);
-      fetch(cctvInfoUrl)
-        .then((res) => {
-          res.json();
-        })
-        .then((data) => {
-          console.log(data);
-        });
-    });
+    this.setCenterWithMyLocation(map);
+    this.boundsChanged(map);
   }
 
-  setCenter = (map) => {
+  setCenterWithMyLocation = (map) => {
     if (navigator.geolocation) {
       // GPS를 지원하면
       navigator.geolocation.getCurrentPosition(
@@ -72,6 +53,31 @@ class Map extends React.Component {
     };
     let map = new kakao.maps.Map(container, options); //지도 생성 및 객체 리턴
     return map;
+  }
+
+  getCCTVInBound(minLat, maxLat, minLng, maxLng) {
+    console.log(`minLat: ${minLat}, maxLat: ${maxLat}, minLng: ${minLng}, maxLng: ${maxLng}`);
+    let cctvInfoUrl = `${this.openAPIurl}/cctvInfo?apiKey=${process.env.REACT_APP_OPENAPI_ITS_KEY}&type=ex&cctvType=1&minX=${minLng}&maxX=${maxLng}&minY=${minLat}&maxY=${maxLat}&getType=json`;
+    console.log(`cctvInfoUrl: ${cctvInfoUrl}`);
+    fetch(cctvInfoUrl)
+      .then((res) => res.json())
+      .then((res) => {
+        let cctvList = res.response.data;
+        console.log(cctvList);
+        return cctvList;
+      });
+  }
+
+  boundsChanged(map) {
+    kakao.maps.event.addListener(map, "bounds_changed", function () {
+      let bounds = map.getBounds();
+      console.log(`bounds: ${bounds}`);
+      let minLat = bounds.getSouthWest().getLat();
+      let minLng = bounds.getSouthWest().getLng();
+      let maxLat = bounds.getNorthEast().getLat();
+      let maxLng = bounds.getNorthEast().getLng();
+      this.getCCTVInBound(minLat, maxLat, minLng, maxLng);
+    });
   }
 
   render() {
