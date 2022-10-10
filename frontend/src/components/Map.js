@@ -18,6 +18,7 @@ class Map extends React.Component {
     let openAPIurl = this.openAPIurl;
     let cctvMarkerImageUrl = "https://www.clipartmax.com/png/middle/58-586592_cctv-camera-icon-cctv-icon.png";
 
+    // 지도 영역 변경시 이벤트 등록
     kakao.maps.event.addListener(map, "bounds_changed", function () {
       let bounds = map.getBounds();
       console.log(`bounds: ${bounds}`);
@@ -49,7 +50,7 @@ class Map extends React.Component {
             let latLng = new kakao.maps.LatLng(lat, lng);
 
             // draw markers
-            let markerImage = new kakao.maps.MarkerImage(cctvMarkerImageUrl, new kakao.maps.Size(50, 50));
+            let markerImage = new kakao.maps.MarkerImage(cctvMarkerImageUrl, new kakao.maps.Size(30, 30));
             let marker = new kakao.maps.Marker({
               position: latLng,
               image: markerImage,
