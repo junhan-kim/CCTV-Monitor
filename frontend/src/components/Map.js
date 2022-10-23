@@ -18,10 +18,11 @@ class Map extends React.Component {
     let openAPIurl = this.openAPIurl;
     let cctvMarkerImageUrl = "https://toppng.com//public/uploads/preview/cctv-camera-icon-cctv-camera-icon-1156329928317vhhunz9l.png";
 
-    // 지도 영역 변경시 이벤트 등록
-    kakao.maps.event.addListener(map, "bounds_changed", function () {
+    let drawCCTVInMap = () => {
+      console.log("bound_changed");
       let bounds = map.getBounds();
       console.log(`bounds: ${bounds}`);
+
       let minLat = bounds.getSouthWest().getLat();
       let minLng = bounds.getSouthWest().getLng();
       let maxLat = bounds.getNorthEast().getLat();
@@ -33,11 +34,17 @@ class Map extends React.Component {
       console.log(`cctvInfoUrl: ${cctvInfoUrl}`);
 
       fetch(cctvInfoUrl)
-        .then((res) => res.json())
         .then((res) => {
-          if (!("data" in res.response)) {
-            return [];
+          if (!res.ok) {
+            console.log(`status: ${res.status}`);
+            if (res.status === 401) {
+              console.error("CCTV API 개인 제한량 초과...");
+              throw new Error(`${res.status} 에러가 발생하였습니다.`);
+            }
           }
+          return res.json();
+        })
+        .then((res) => {
           let cctvList = res.response.data;
           console.log(cctvList);
           if (typeof cctvList == "undefined") {
@@ -61,8 +68,17 @@ class Map extends React.Component {
 
             marker.setMap(map);
           }
+        })
+        .catch((err) => {
+          console.error(`drawCCTVInMap error => ${err}`);
         });
-    });
+    };
+
+    // 지도 영역 변경시 이벤트 등록
+    // bound_changed = zoom_changed + drag 인데, 이 중 drag를 dragend로 바꾸어 잦은 요청을 줄임.
+    // kakao.maps.event.addListener(map, "bound_changed", drawCCTVInMap);
+    kakao.maps.event.addListener(map, "zoom_changed", drawCCTVInMap);
+    kakao.maps.event.addListener(map, "dragend", drawCCTVInMap);
   }
 
   setCenterWithMyLocation = (map) => {
